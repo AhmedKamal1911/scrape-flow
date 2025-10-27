@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ABeeZee } from "next/font/google";
 import "./globals.css";
+import AppProviders from "@/components/common/providers/AppProviders";
 
 const abeezee = ABeeZee({
   variable: "--font-abeezee",
@@ -19,8 +20,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${abeezee.variable} antialiased`}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          async
+          crossOrigin="anonymous"
+          src="https://tweakcn.com/live-preview.min.js"
+        />
+      </head>
+      <body className={`${abeezee.variable} antialiased`}>
+        <AppProviders>{children}</AppProviders>
+      </body>
     </html>
   );
 }
