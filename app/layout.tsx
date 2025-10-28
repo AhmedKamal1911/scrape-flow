@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { ABeeZee } from "next/font/google";
 import "./globals.css";
 import AppProviders from "@/components/common/providers/AppProviders";
+import { ClerkProvider } from "@clerk/nextjs";
+import { buttonVariants } from "@/components/ui/button";
 
 const abeezee = ABeeZee({
   variable: "--font-abeezee",
@@ -20,17 +22,34 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
-          async
-          crossOrigin="anonymous"
-          src="https://tweakcn.com/live-preview.min.js"
-        />
-      </head>
-      <body className={`${abeezee.variable} antialiased`}>
-        <AppProviders>{children}</AppProviders>
-      </body>
-    </html>
+    <ClerkProvider
+      afterSignOutUrl={"/sign-in"}
+      appearance={{
+        cssLayerName: "clerk",
+        captcha: {
+          size: "flexible",
+          language: "es-ES",
+        },
+        elements: {
+          card: "max-[320px]:p-2! max-sm:p-4! p-6 bg-white",
+          formButtonPrimary: "bg-primary py-2.5 shadow-xs",
+          formFieldInput:
+            "focus-visible:border-ring focus-visible:ring-ring/90 focus-visible:ring-[2px]",
+          socialButtonsBlockButton:
+            "focus-visible:border-ring focus-visible:ring-ring/70 focus-visible:ring-[3px]",
+        },
+      }}
+    >
+      <html lang="en" suppressHydrationWarning>
+        <head>
+          <script
+            async
+            crossOrigin="anonymous"
+            src="https://tweakcn.com/live-preview.min.js"
+          />
+        </head>
+        <body className={`${abeezee.variable} antialiased`}>{children}</body>
+      </html>
+    </ClerkProvider>
   );
 }

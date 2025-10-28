@@ -9,7 +9,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Fragment } from "react";
-
 export default function HeaderBreadcrumb() {
   const pathname = usePathname();
   const paths = pathname === "/" ? [""] : pathname.split("/").filter(Boolean);

@@ -14,8 +14,9 @@ import {
 } from "lucide-react";
 
 import { ForwardRefExoticComponent, RefAttributes } from "react";
-import Logo from "./logo";
+
 import { SidebarNav } from "./sidebar-nav";
+import Logo from "@/components/common/logo";
 
 export type Route = {
   href: string;
