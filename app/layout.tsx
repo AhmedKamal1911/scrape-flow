@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { ABeeZee } from "next/font/google";
 import "./globals.css";
-import AppProviders from "@/components/common/providers/AppProviders";
-import { ClerkProvider } from "@clerk/nextjs";
-import { buttonVariants } from "@/components/ui/button";
 
+import { ClerkProvider } from "@clerk/nextjs";
+
+import { Toaster } from "@/components/ui/sonner";
 const abeezee = ABeeZee({
   variable: "--font-abeezee",
   weight: ["400"],
@@ -48,7 +48,10 @@ export default function RootLayout({
             src="https://tweakcn.com/live-preview.min.js"
           />
         </head>
-        <body className={`${abeezee.variable} antialiased`}>{children}</body>
+        <body className={`${abeezee.variable} antialiased`}>
+          {children}
+          <Toaster richColors />
+        </body>
       </html>
     </ClerkProvider>
   );

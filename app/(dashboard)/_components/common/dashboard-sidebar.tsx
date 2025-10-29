@@ -9,6 +9,7 @@ import {
   Home,
   Landmark,
   Layers2Icon,
+  LucideIcon,
   LucideProps,
   ShieldCheck,
 } from "lucide-react";
@@ -21,9 +22,7 @@ import Logo from "@/components/common/logo";
 export type Route = {
   href: string;
   label: string;
-  icon: ForwardRefExoticComponent<
-    Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
-  >;
+  icon: LucideIcon;
 };
 const routes: Route[] = [
   { href: "/", label: "Home", icon: Home },
