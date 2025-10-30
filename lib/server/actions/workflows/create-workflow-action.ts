@@ -2,6 +2,7 @@
 
 import { isErrorType, isPrismaError } from "@/lib/helper-utils";
 import prisma from "@/lib/prisma";
+import { WorkflowStatus } from "@/lib/types/workflow";
 import {
   createWorkflowSchema,
   WorkflowInputs,
@@ -32,6 +33,7 @@ export async function createWorkflowAction(inputs: WorkflowInputs) {
     const result = await prisma.workflow.create({
       data: {
         userId,
+        status: WorkflowStatus.DRAFT,
         definition: "TODO",
         ...data,
       },

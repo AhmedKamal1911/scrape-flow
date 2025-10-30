@@ -27,7 +27,7 @@ export function ModeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      className="relative w-10 h-10 flex items-center justify-center overflow-hidden"
+      className="relative w-10 h-10 flex items-center justify-center overflow-hidden cursor-pointer"
       onClick={handleToggle}
     >
       <Sun

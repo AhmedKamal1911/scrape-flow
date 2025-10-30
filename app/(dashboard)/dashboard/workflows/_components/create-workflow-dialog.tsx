@@ -28,9 +28,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation } from "@tanstack/react-query";
-import { createWorkflowAction } from "@/lib/server/actions/workflows/create-work-flow-action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { createWorkflowAction } from "@/lib/server/actions/workflows/create-workflow-action";
 
 type Props = {
   buttonText?: string;
@@ -47,9 +47,9 @@ export default function CreateWorkflowDialog({ buttonText }: Props) {
   });
   const { mutate, isPending } = useMutation({
     mutationFn: createWorkflowAction,
-    onSuccess: (data) => {
+    onSuccess: (workflow) => {
       toast.success("Workflow Created", { id: "create-workflow" });
-      router.push(`/workflow/editor/${data.id}`);
+      router.push(`/dashboard/workflow/editor/${workflow.id}`);
     },
     onError: (error) => {
       toast.error(error.message, { id: "create-workflow" });

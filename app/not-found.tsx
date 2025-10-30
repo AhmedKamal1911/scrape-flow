@@ -15,7 +15,7 @@ export default function NotfoundPage() {
 
       <Button className="mt-8 px-6 py-2 text-base rounded-lg shadow-md hover:shadow-lg transition-all">
         <ArrowLeft />
-        <Link href="/">Go back home</Link>
+        <Link href="/dashboard">Go back home</Link>
       </Button>
 
       <div className="absolute bottom-6 text-sm text-muted-foreground/70">

@@ -21,7 +21,7 @@ export default function HeaderBreadcrumb() {
           const href = "/" + paths.slice(0, i + 1).join("/");
           return (
             <Fragment key={i}>
-              <BreadcrumbItem className="capitalize font-semibold text-accent-foreground/80">
+              <BreadcrumbItem className="capitalize font-semibold text-accent-foreground">
                 {isLast ? (
                   <span>{path || "Home"}</span>
                 ) : (
