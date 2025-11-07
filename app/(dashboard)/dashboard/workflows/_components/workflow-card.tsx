@@ -6,7 +6,7 @@ import { WorkflowStatus } from "@/lib/types/workflow";
 import { Workflow } from "@prisma/client";
 import { FileText, PlayCircle, ShuffleIcon } from "lucide-react";
 import Link from "next/link";
-import WorkflowMenu from "./workflow-menu";
+import WorkflowOptions from "./workflow-options";
 
 type Props = {
   workflow: Workflow;
@@ -63,8 +63,7 @@ export default function WorkflowCard({ workflow }: Props) {
             <ShuffleIcon size={16} />
             edit
           </Link>
-
-          <WorkflowMenu workflow={workflow} />
+          <WorkflowOptions workflow={workflow} />
         </div>
       </CardContent>
     </Card>

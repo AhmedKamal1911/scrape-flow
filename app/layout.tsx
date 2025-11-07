@@ -5,6 +5,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 
 import { Toaster } from "@/components/ui/sonner";
+import AppProviders from "@/components/providers/AppProviders";
 const abeezee = ABeeZee({
   variable: "--font-abeezee",
   weight: ["400"],
@@ -49,8 +50,10 @@ export default function RootLayout({
           />
         </head>
         <body className={`${abeezee.variable} antialiased`}>
-          {children}
-          <Toaster richColors />
+          <AppProviders>
+            {children}
+            <Toaster richColors />
+          </AppProviders>
         </body>
       </html>
     </ClerkProvider>
