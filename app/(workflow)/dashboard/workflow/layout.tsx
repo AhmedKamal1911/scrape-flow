@@ -8,7 +8,7 @@ export default function layout({ children }: { children: ReactNode }) {
     <div className="flex flex-col h-screen">
       {children}
       <Separator />
-      <footer className="flex items-center justify-between p-2">
+      <footer className="flex items-center justify-between p-2 min-h-14">
         <Logo />
         <ModeToggle />
       </footer>

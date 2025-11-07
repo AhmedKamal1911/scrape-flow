@@ -11,7 +11,11 @@ import {
   useNodesState,
 } from "@xyflow/react";
 import React from "react";
-
+import { CustomNode } from "./node/custom-node";
+const nodeTypes = {
+  FlowScrapeNode: CustomNode,
+};
+const fitViewOptions = { padding: 3 };
 export default function FlowEditor({ workflow }: { workflow: Workflow }) {
   const [nodes, setNodes, onNodesChange] = useNodesState([
     createFlowNode(NodeTaskType.LAUNCH_BROWSER),
@@ -24,15 +28,12 @@ export default function FlowEditor({ workflow }: { workflow: Workflow }) {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgeChange}
+        nodeTypes={nodeTypes}
+        fitViewOptions={fitViewOptions}
         fitView
       >
-        <Controls position="top-left" />
-        <Background
-          variant={BackgroundVariant.Dots}
-          // bgColor="#dfdfdf"
-          gap={12}
-          size={1}
-        />
+        <Controls position="top-left" fitViewOptions={fitViewOptions} />
+        <Background variant={BackgroundVariant.Lines} gap={12} size={1} />
       </ReactFlow>
     </main>
   );
