@@ -2,11 +2,13 @@
 
 import { isErrorType, isPrismaError } from "@/lib/helper-utils";
 import prisma from "@/lib/prisma";
-import { WorkflowStatus } from "@/lib/types/workflow";
+import { NodeTaskType } from "@/lib/types/nodeTask";
+import { WorkflowDefinition, WorkflowStatus } from "@/lib/types/workflow";
 import {
   createWorkflowSchema,
   WorkflowInputs,
 } from "@/lib/validation/workflow";
+import { createFlowNode } from "@/lib/workflow/create-flow-node";
 import { auth } from "@clerk/nextjs/server";
 
 export async function createWorkflowAction(inputs: WorkflowInputs) {
@@ -19,6 +21,12 @@ export async function createWorkflowAction(inputs: WorkflowInputs) {
   if (!userId) {
     throw new Error("Unauthnticated!");
   }
+
+  const initialWorkflow: WorkflowDefinition = {
+    edges: [],
+    nodes: [createFlowNode(NodeTaskType.LAUNCH_BROWSER)],
+    viewport: { x: 0, y: 0, zoom: 1 },
+  };
   try {
     const isWorkflowExist = await prisma.workflow.findFirst({
       where: {
@@ -34,7 +42,7 @@ export async function createWorkflowAction(inputs: WorkflowInputs) {
       data: {
         userId,
         status: WorkflowStatus.DRAFT,
-        definition: "TODO",
+        definition: JSON.stringify(initialWorkflow),
         ...data,
       },
     });

@@ -52,7 +52,7 @@ export default function RootLayout({
         <body className={`${abeezee.variable} antialiased`}>
           <AppProviders>
             {children}
-            <Toaster richColors />
+            <Toaster richColors visibleToasts={1} />
           </AppProviders>
         </body>
       </html>

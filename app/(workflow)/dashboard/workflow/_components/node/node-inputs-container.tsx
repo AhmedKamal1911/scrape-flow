@@ -12,10 +12,16 @@ export default function NodeInputsContainer({
   return <div className="flex flex-col gap-2 divide-y">{children}</div>;
 }
 
-export function NodeInput({ input }: { input: TaskInput }) {
+export function NodeInput({
+  input,
+  nodeId,
+}: {
+  input: TaskInput;
+  nodeId: string;
+}) {
   return (
-    <div className="flex p-3 bg-muted w-full">
-      <NodeInputField input={input} />
+    <div className="flex p-3 bg-muted/50 w-full">
+      <NodeInputField nodeId={nodeId} input={input} />
       {!input.hideHandle && (
         <Handle
           id={input.name}

@@ -6,7 +6,7 @@ import { FlowNodeData } from "@/lib/types/flowNode";
 import { TaskRegistry } from "@/lib/workflow/task/task-registry";
 import NodeInputsContainer, { NodeInput } from "./node-inputs-container";
 
-export const CustomNode = memo(function CustomNode(props: NodeProps) {
+export const CustomNodeComponent = memo(function CustomNode(props: NodeProps) {
   const nodeData = props.data as FlowNodeData;
   const task = TaskRegistry[nodeData.type];
   return (
@@ -14,7 +14,7 @@ export const CustomNode = memo(function CustomNode(props: NodeProps) {
       <NodeHeader taskType={nodeData.type} />
       <NodeInputsContainer>
         {task.inputs.map((input) => (
-          <NodeInput key={input.name} input={input} />
+          <NodeInput nodeId={props.id} key={input.name} input={input} />
         ))}
       </NodeInputsContainer>
     </NodeCard>

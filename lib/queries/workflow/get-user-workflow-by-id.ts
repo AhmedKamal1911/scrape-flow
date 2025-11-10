@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { isErrorType, isPrismaError } from "@/lib/helper-utils";
 
-export async function GetUserWorkflowById(userId: string, workflowId: string) {
+export async function getUserWorkflowById(userId: string, workflowId: string) {
   try {
     const workflow = await prisma.workflow.findUnique({
       where: {

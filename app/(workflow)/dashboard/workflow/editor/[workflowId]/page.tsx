@@ -1,5 +1,5 @@
 import { waitFor } from "@/lib/helper-utils";
-import { GetUserWorkflowById } from "@/lib/queries/workflow/get-user-workflow-by-id";
+import { getUserWorkflowById } from "@/lib/queries/workflow/get-user-workflow-by-id";
 import { auth } from "@clerk/nextjs/server";
 import EditorBox from "../../_components/editor-box";
 
@@ -14,7 +14,7 @@ export default async function page({ params }: Props) {
   if (!userId) return <div>unauthenticated</div>;
   await waitFor(5000);
   try {
-    const workflow = await GetUserWorkflowById(userId, workflowId);
+    const workflow = await getUserWorkflowById(userId, workflowId);
 
     return <EditorBox workflow={workflow} />;
   } catch (error) {
