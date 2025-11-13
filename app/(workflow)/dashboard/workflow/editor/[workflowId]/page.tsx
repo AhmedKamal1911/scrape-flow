@@ -12,7 +12,8 @@ export default async function page({ params }: Props) {
   const { workflowId } = await params;
   const { userId } = await auth();
   if (!userId) return <div>unauthenticated</div>;
-  await waitFor(5000);
+  // TODO: Customize the unauthenticated ui
+  // await waitFor(5000);
   try {
     const workflow = await getUserWorkflowById(userId, workflowId);
 

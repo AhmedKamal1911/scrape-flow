@@ -1,7 +1,7 @@
 import { NodeTaskInputType, TaskInput } from "@/lib/types/nodeTask";
 import React, { useCallback } from "react";
 import StringInputField from "./inputs/string-input-field";
-import { useReactFlow } from "@xyflow/react";
+import { useEdges, useReactFlow } from "@xyflow/react";
 import { FlowNode } from "@/lib/types/flowNode";
 
 export default function NodeInputField({
@@ -12,6 +12,10 @@ export default function NodeInputField({
   nodeId: string;
 }) {
   const { updateNodeData, getNode } = useReactFlow();
+  const edges = useEdges();
+  const isConnected = edges.some((edge) => {
+    return edge.target === nodeId && edge.targetHandle === input.name;
+  });
   const node = getNode(nodeId) as FlowNode;
   const inputValue = node?.data.inputs?.[input.name];
   const updateNodeInputValue = useCallback(
@@ -33,14 +37,27 @@ export default function NodeInputField({
           updateNodeInputValue={updateNodeInputValue}
           inputProps={input}
           inputValue={inputValue}
+          disabled={isConnected}
         />
       );
       break;
+    // case NodeTaskInputType.BROWSER_INSTANCE:
+    //   return (
+    //     <StringInputField
+    //       updateNodeInputValue={updateNodeInputValue}
+    //       inputProps={input}
+    //       inputValue={inputValue}
+    //       disabled={isConnected}
+    //     />
+    //   );
+    //   break;
 
     default:
-      <div className="w-full">
-        <p className="">Not Impelementd Yet</p>
-      </div>;
+      return (
+        <div className="w-full">
+          <p className="text-muted-foreground text-sm">Not Impelementd Yet</p>
+        </div>
+      );
       break;
   }
 }

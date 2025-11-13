@@ -11,7 +11,7 @@
   --popover-foreground: oklch(0.2809 0 0);
   --primary: oklch(0.6362 0.1112 164.2035);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.994 0 0);
+  --secondary: oklch(98.288% 0.00104 11.251);
   --secondary-foreground: oklch(0.2046 0 0);
   --muted: oklch(0.9249 0 0);
   --muted-foreground: oklch(0.5208 0 0);
@@ -199,4 +199,17 @@ body {
   @variant sm {
     padding-inline: 20px;
   }
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--primary); /* اللون الأساسي */
+  border-radius: 2px;
 }
