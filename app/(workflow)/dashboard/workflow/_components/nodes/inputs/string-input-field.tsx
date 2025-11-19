@@ -22,6 +22,7 @@ function renderField({
   return {
     input: (
       <Input
+        className="bg-background!"
         disabled={disabled}
         id={inputProps.name}
         placeholder="Enter The Value"
@@ -32,7 +33,7 @@ function renderField({
     ),
     textarea: (
       <Textarea
-        className="max-h-[200px]"
+        className="max-h-[100px] bg-background!"
         disabled={disabled}
         id={inputProps.name}
         placeholder="Enter The Value"
@@ -49,7 +50,7 @@ export default function StringInputField({
   disabled,
   updateNodeInputValue,
 }: StringInputFieldProps) {
-  const [value, setValue] = useState(inputValue ?? "");
+  const [value, setValue] = useState(inputValue);
   useEffect(() => {
     setValue(inputValue);
   }, [inputValue]);

@@ -1,23 +1,23 @@
 import { NodeTaskInputType, TaskInput } from "@/lib/types/nodeTask";
 import React, { useCallback } from "react";
 import StringInputField from "./inputs/string-input-field";
-import { useEdges, useReactFlow } from "@xyflow/react";
+import { useReactFlow } from "@xyflow/react";
 import { FlowNode } from "@/lib/types/flowNode";
+import BrowserInstanceInput from "./inputs/browser-instance-input";
 
 export default function NodeInputField({
   input,
   nodeId,
+  isConnected,
 }: {
   input: TaskInput;
   nodeId: string;
+  isConnected: boolean;
 }) {
   const { updateNodeData, getNode } = useReactFlow();
-  const edges = useEdges();
-  const isConnected = edges.some((edge) => {
-    return edge.target === nodeId && edge.targetHandle === input.name;
-  });
+
   const node = getNode(nodeId) as FlowNode;
-  const inputValue = node?.data.inputs?.[input.name];
+  const inputValue = node?.data.inputs?.[input.name] ?? "";
   const updateNodeInputValue = useCallback(
     (newInputValue: string) => {
       updateNodeData(nodeId, {
@@ -27,7 +27,7 @@ export default function NodeInputField({
         },
       });
     },
-    [nodeId, input.name, node?.data.inputs, updateNodeData]
+    [nodeId, input.name, node?.data?.inputs, updateNodeData]
   );
 
   switch (input.type) {
@@ -41,16 +41,15 @@ export default function NodeInputField({
         />
       );
       break;
-    // case NodeTaskInputType.BROWSER_INSTANCE:
-    //   return (
-    //     <StringInputField
-    //       updateNodeInputValue={updateNodeInputValue}
-    //       inputProps={input}
-    //       inputValue={inputValue}
-    //       disabled={isConnected}
-    //     />
-    //   );
-    //   break;
+    case NodeTaskInputType.BROWSER_INSTANCE:
+      return (
+        <BrowserInstanceInput
+          updateNodeInputValue={updateNodeInputValue}
+          inputProps={input}
+          inputValue={inputValue}
+        />
+      );
+      break;
 
     default:
       return (

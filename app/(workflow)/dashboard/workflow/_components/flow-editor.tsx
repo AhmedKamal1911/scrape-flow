@@ -8,6 +8,9 @@ import {
   Connection,
   Controls,
   Edge,
+  getOutgoers,
+  IsValidConnection,
+  OnBeforeDelete,
   ReactFlow,
   useEdgesState,
   useNodesState,
@@ -21,6 +24,8 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { createFlowNode } from "@/lib/workflow/create-flow-node";
 import { NodeTaskType } from "@/lib/types/nodeTask";
 import DeletableEdge from "./deletable-edge";
+import { toast } from "sonner";
+import { TaskRegistry } from "@/lib/workflow/task/task-registry";
 const nodeTypes = {
   FlowScrapeNode: CustomNodeComponent,
 };
@@ -62,6 +67,21 @@ export default function FlowEditor({ workflow }: { workflow: Workflow }) {
     },
     [screenToFlowPosition, setNodes]
   );
+  const onBeforeDelete: OnBeforeDelete<FlowNode, Edge> = useCallback(
+    async ({ nodes: deletingNodes }) => {
+      const hasLaunchBrowser = deletingNodes.some(
+        (node) => node.data.type === "LAUNCH_BROWSER"
+      );
+
+      if (hasLaunchBrowser) {
+        toast.warning("Lauch Browser Node Cannot Be Removed!");
+        return false;
+      }
+
+      return true;
+    },
+    []
+  );
 
   const onConnect = useCallback(
     (connection: Connection) => {
@@ -70,13 +90,61 @@ export default function FlowEditor({ workflow }: { workflow: Workflow }) {
       const node = nodes.find((n) => n.id === connection.target);
       if (!node) return;
       const nodeInputs = node.data.inputs;
-
+      console.log({ nodeInputs });
       updateNodeData(node.id, {
         inputs: { ...nodeInputs, [connection.targetHandle]: "" },
       });
       console.log({ nodeInputs });
     },
     [nodes, setEdges, updateNodeData]
+  );
+
+  const isValidConnection: IsValidConnection<Edge> = useCallback(
+    ({ source, target, sourceHandle, targetHandle }) => {
+      // Turn off self-connection
+      if (source === target) {
+        return false;
+      }
+      const nodeSource = nodes.find((node) => node.id === source);
+      const nodeTarget = nodes.find((node) => node.id === target);
+      if (!nodeSource || !nodeTarget) {
+        console.error("invalid source or target : notfound!");
+        return false;
+      }
+      const taskSource = TaskRegistry[nodeSource.data.type];
+      const taskTarget = TaskRegistry[nodeTarget.data.type];
+      const output = taskSource.outputs.find(
+        (out) => out.name === sourceHandle
+      );
+      const input = taskTarget.inputs.find((inp) => inp.name === targetHandle);
+      console.log({ input, output });
+      if (input?.type !== output?.type) {
+        console.error(
+          "invalid connection : the input and the output aren't the same"
+        );
+        return false;
+      }
+      // prevent workflow cycle
+
+      const hasCycle = (
+        node: FlowNode,
+        visited = new Set<string>()
+      ): boolean => {
+        if (visited.has(node.id)) return false;
+        visited.add(node.id);
+
+        for (const outgoer of getOutgoers(node, nodes, edges)) {
+          if (outgoer.id === source) return true;
+          if (hasCycle(outgoer, visited)) return true;
+        }
+
+        return false;
+      };
+
+      const detectedCycle = hasCycle(nodeTarget);
+      return !detectedCycle;
+    },
+    [nodes, edges]
   );
   return (
     <main className="size-full flex-1">
@@ -85,11 +153,13 @@ export default function FlowEditor({ workflow }: { workflow: Workflow }) {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgeChange}
+        onBeforeDelete={onBeforeDelete}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         onDragOver={onDragOver}
         onDrop={onDrop}
         onConnect={onConnect}
+        isValidConnection={isValidConnection}
         fitViewOptions={fitViewOptions}
         fitView
       >

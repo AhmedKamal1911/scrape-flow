@@ -11,12 +11,8 @@ import NodeOutputsContainer, {
 
 export const CustomNodeComponent = memo(function CustomNode(props: NodeProps) {
   const nodeData = props.data as FlowNodeData;
-  if (!TaskRegistry[nodeData.type]) {
-    console.error("Invalid node type:", nodeData.type);
-    return null; // أو throw error
-  }
   const task = TaskRegistry[nodeData.type];
-
+  console.log({ task });
   return (
     <NodeCard nodeId={props.id} isSelected={props.selected}>
       <NodeHeader taskType={nodeData.type} />

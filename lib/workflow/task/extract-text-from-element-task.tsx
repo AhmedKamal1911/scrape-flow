@@ -17,6 +17,7 @@ export const ExtractTextFromElementTask = {
       type: NodeTaskInputType.STRING,
       name: "Selector",
       required: true,
+      variant: "input",
     },
   ],
   outputs: [{ name: "Extracted text", type: NodeTaskInputType.STRING }],

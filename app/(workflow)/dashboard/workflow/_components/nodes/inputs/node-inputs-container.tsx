@@ -1,7 +1,7 @@
 import { TaskInput } from "@/lib/types/nodeTask";
 import { cn } from "@/lib/utils";
-import { Handle, Position } from "@xyflow/react";
-import React, { ReactNode } from "react";
+import { Handle, Position, useEdges } from "@xyflow/react";
+import React, { ReactNode, useId } from "react";
 import NodeInputField from "../node-input-field";
 import { HandleColor } from "../../common";
 
@@ -20,14 +20,20 @@ export function NodeInput({
   input: TaskInput;
   nodeId: string;
 }) {
+  const edges = useEdges();
+  const isConnected = edges.some((edge) => {
+    return edge.target === nodeId && edge.targetHandle === input.name;
+  });
+  // REMEMBER: think about the isConnected and how it works
   return (
-    <div className="flex p-3 bg-muted/50 w-full">
-      <NodeInputField nodeId={nodeId} input={input} />
+    <div className="flex p-3 bg-muted/50 w-full relative">
+      <NodeInputField nodeId={nodeId} input={input} isConnected={isConnected} />
       {!input.hideHandle && (
         <Handle
           id={input.name}
           type="target"
           position={Position.Left}
+          isConnectable={!isConnected}
           className={cn(
             "!bg-muted-foreground !-left-0 !border-2 !border-secondary  !size-4 z-10",
             HandleColor[input.type]
