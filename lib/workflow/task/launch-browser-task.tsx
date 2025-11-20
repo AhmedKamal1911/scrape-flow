@@ -1,4 +1,5 @@
 import { NodeTaskInputType, NodeTaskType } from "@/lib/types/nodeTask";
+import { WorkflowTask } from "@/lib/types/workflow";
 import { GlobeIcon, LucideProps } from "lucide-react";
 
 export const LaunchBrowserTask = {
@@ -18,4 +19,5 @@ export const LaunchBrowserTask = {
     },
   ],
   outputs: [{ name: "Web page", type: NodeTaskInputType.BROWSER_INSTANCE }],
-};
+  credits: 5,
+} satisfies WorkflowTask;

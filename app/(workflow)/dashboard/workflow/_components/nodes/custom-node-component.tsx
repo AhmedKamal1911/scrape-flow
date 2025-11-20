@@ -12,10 +12,10 @@ import NodeOutputsContainer, {
 export const CustomNodeComponent = memo(function CustomNode(props: NodeProps) {
   const nodeData = props.data as FlowNodeData;
   const task = TaskRegistry[nodeData.type];
-  console.log({ task });
+
   return (
     <NodeCard nodeId={props.id} isSelected={props.selected}>
-      <NodeHeader taskType={nodeData.type} />
+      <NodeHeader taskType={nodeData.type} nodeId={props.id} />
       <NodeInputsContainer>
         {task.inputs.map((input) => (
           <NodeInput nodeId={props.id} key={input.name} input={input} />

@@ -1,11 +1,11 @@
 "use server";
 
+import { getUserWorkflowUsecase } from "@/lib/dal";
 import { isErrorType, isPrismaError } from "@/lib/helper-utils";
 import prisma from "@/lib/prisma";
-import { getUserWorkflowById } from "@/lib/queries/workflow/get-user-workflow-by-id";
+
 import { WorkflowStatus } from "@/lib/types/workflow";
 
-import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
 export async function updateWorkflowAction({
@@ -15,18 +15,16 @@ export async function updateWorkflowAction({
   workflowId: string;
   definition: string;
 }) {
-  const { userId } = await auth();
+  const workflow = await getUserWorkflowUsecase({ workflowId });
 
-  if (!userId) {
-    throw new Error("Unauthnticated!");
-  }
+  if (!workflow)
+    throw new Error("Workflow you are trying to update is not found!");
   try {
-    const workflow = await getUserWorkflowById(userId, workflowId);
     if (workflow.status !== WorkflowStatus.DRAFT) {
       throw new Error("Only draft workflows can be updated.");
     }
     await prisma.workflow.update({
-      where: { id: workflow.id, userId },
+      where: { id: workflow.id, userId: workflow.userId },
       data: { definition },
     });
     revalidatePath("/dashboard/workflows");

@@ -26,7 +26,7 @@ export default function NodeCard({
         setCenter(x, y);
       }}
       className={cn(
-        "border-3 cursor-pointer rounded-sm border-accent w-[400px] flex flex-col  bg-card transition-colors",
+        "border-3 cursor-pointer rounded-sm border-accent w-[440px] flex flex-col  bg-card transition-colors",
         isSelected && "border-primary"
       )}
     >

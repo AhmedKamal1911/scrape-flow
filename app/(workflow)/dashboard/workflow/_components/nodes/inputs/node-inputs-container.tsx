@@ -1,7 +1,7 @@
-import { TaskInput } from "@/lib/types/nodeTask";
+import { TaskInputs } from "@/lib/types/nodeTask";
 import { cn } from "@/lib/utils";
 import { Handle, Position, useEdges } from "@xyflow/react";
-import React, { ReactNode, useId } from "react";
+import React, { ReactNode } from "react";
 import NodeInputField from "../node-input-field";
 import { HandleColor } from "../../common";
 
@@ -17,7 +17,7 @@ export function NodeInput({
   input,
   nodeId,
 }: {
-  input: TaskInput;
+  input: TaskInputs;
   nodeId: string;
 }) {
   const edges = useEdges();

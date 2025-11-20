@@ -1,24 +1,13 @@
-import { waitFor } from "@/lib/helper-utils";
-import { getUserWorkflowById } from "@/lib/queries/workflow/get-user-workflow-by-id";
-import { auth } from "@clerk/nextjs/server";
+import { getUserWorkflowUsecase } from "@/lib/dal";
 import EditorBox from "../../_components/editor-box";
+import { notFound } from "next/navigation";
 
-type Props = {
-  params: Promise<{
-    workflowId: string;
-  }>;
-};
-export default async function page({ params }: Props) {
+export default async function page({
+  params,
+}: PageProps<"/dashboard/workflow/editor/[workflowId]">) {
   const { workflowId } = await params;
-  const { userId } = await auth();
-  if (!userId) return <div>unauthenticated</div>;
-  // TODO: Customize the unauthenticated ui
-  // await waitFor(5000);
-  try {
-    const workflow = await getUserWorkflowById(userId, workflowId);
+  const workflow = await getUserWorkflowUsecase({ workflowId });
+  if (!workflow) return notFound();
 
-    return <EditorBox workflow={workflow} />;
-  } catch (error) {
-    return <div>{error as string}</div>;
-  }
+  return <EditorBox workflow={workflow} />;
 }

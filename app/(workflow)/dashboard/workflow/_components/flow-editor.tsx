@@ -32,7 +32,7 @@ const nodeTypes = {
 const edgeTypes = {
   default: DeletableEdge,
 };
-const fitViewOptions = { padding: 1 };
+const fitViewOptions = { padding: 0.2 };
 export default function FlowEditor({ workflow }: { workflow: Workflow }) {
   const { screenToFlowPosition, updateNodeData } = useReactFlow();
   const workflowParsed = useMemo(() => {

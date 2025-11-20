@@ -9,7 +9,7 @@ export enum NodeTaskInputType {
   BROWSER_INSTANCE = "BROWSER_INSTANCE",
 }
 
-export type TaskInput = {
+export type TaskInputs = {
   name: string;
   type: NodeTaskInputType;
   placeholder?: string;
@@ -20,7 +20,7 @@ export type TaskInput = {
 };
 
 export type StringInputFieldProps = {
-  inputProps: TaskInput;
+  inputProps: TaskInputs;
   inputValue: string;
   disabled?: boolean;
   updateNodeInputValue: (val: string) => void;

@@ -1,4 +1,4 @@
-import { TaskInput } from "@/lib/types/nodeTask";
+import { TaskInputs } from "@/lib/types/nodeTask";
 import { cn } from "@/lib/utils";
 import { Handle, Position } from "@xyflow/react";
 import React, { ReactNode } from "react";
@@ -12,7 +12,7 @@ export default function NodeOutputsContainer({
   return <div className="flex flex-col divide-y border-t-1">{children}</div>;
 }
 
-export function NodeOutput({ output }: { output: TaskInput }) {
+export function NodeOutput({ output }: { output: TaskInputs }) {
   return (
     <div className="flex p-3  justify-end relative bg-secondary">
       <p className="text-xs text-muted-foreground font-semibold">

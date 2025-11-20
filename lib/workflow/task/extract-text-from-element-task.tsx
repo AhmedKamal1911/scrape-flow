@@ -1,4 +1,5 @@
 import { NodeTaskInputType, NodeTaskType } from "@/lib/types/nodeTask";
+import { WorkflowTask } from "@/lib/types/workflow";
 import { Code, LucideProps } from "lucide-react";
 
 export const ExtractTextFromElementTask = {
@@ -21,4 +22,5 @@ export const ExtractTextFromElementTask = {
     },
   ],
   outputs: [{ name: "Extracted text", type: NodeTaskInputType.STRING }],
-};
+  credits: 2,
+} satisfies WorkflowTask;

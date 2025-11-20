@@ -1,4 +1,4 @@
-import { NodeTaskInputType, TaskInput } from "@/lib/types/nodeTask";
+import { NodeTaskInputType, TaskInputs } from "@/lib/types/nodeTask";
 import React, { useCallback } from "react";
 import StringInputField from "./inputs/string-input-field";
 import { useReactFlow } from "@xyflow/react";
@@ -10,7 +10,7 @@ export default function NodeInputField({
   nodeId,
   isConnected,
 }: {
-  input: TaskInput;
+  input: TaskInputs;
   nodeId: string;
   isConnected: boolean;
 }) {

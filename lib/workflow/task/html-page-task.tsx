@@ -1,4 +1,6 @@
 import { NodeTaskInputType, NodeTaskType } from "@/lib/types/nodeTask";
+import { WorkflowTask } from "@/lib/types/workflow";
+
 import { Code, LucideProps } from "lucide-react";
 
 export const HtmlPageTask = {
@@ -17,4 +19,5 @@ export const HtmlPageTask = {
     { name: "Html", type: NodeTaskInputType.STRING },
     { name: "Web page", type: NodeTaskInputType.BROWSER_INSTANCE },
   ],
-};
+  credits: 2,
+} satisfies WorkflowTask;
