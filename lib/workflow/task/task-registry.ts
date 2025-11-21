@@ -4,7 +4,7 @@ import { HtmlPageTask } from "./html-page-task";
 import { LaunchBrowserTask } from "./launch-browser-task";
 import { WorkflowTask } from "@/lib/types/workflow";
 type TaskRegistryType = {
-  [X in NodeTaskType]: WorkflowTask;
+  [X in NodeTaskType]: WorkflowTask & { type: X };
 };
 export const TaskRegistry: TaskRegistryType = {
   LAUNCH_BROWSER: LaunchBrowserTask,

@@ -1,4 +1,4 @@
-import { Edge, ReactFlowJsonObject } from "@xyflow/react";
+import { Edge, Node, ReactFlowJsonObject } from "@xyflow/react";
 import { FlowNode } from "./flowNode";
 import { LucideProps } from "lucide-react";
 import { NodeTaskType, TaskInputs as TaskInputs } from "./nodeTask";
@@ -18,4 +18,9 @@ export type WorkflowTask = {
   inputs: TaskInputs[];
   outputs: TaskInputs[];
   credits: number;
+};
+
+export type WorkflowExecutionPlan = {
+  phase: number;
+  nodes: Node[];
 };
