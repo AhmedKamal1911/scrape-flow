@@ -15,7 +15,7 @@ export async function updateWorkflowAction({
   workflowId: string;
   definition: string;
 }) {
-  const workflow = await getUserWorkflowUsecase({ workflowId });
+  const workflow = await getUserWorkflowUsecase(workflowId);
 
   if (!workflow)
     throw new Error("Workflow you are trying to update is not found!");

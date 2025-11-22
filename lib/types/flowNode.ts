@@ -8,3 +8,8 @@ export type FlowNodeData = {
 export type FlowNode = Node & {
   data: FlowNodeData;
 };
+
+export type FlowNodeMissingInputs = {
+  nodeId: string;
+  inputs: string[];
+};

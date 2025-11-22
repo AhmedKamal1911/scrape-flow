@@ -4,6 +4,7 @@ import { Handle, Position, useEdges } from "@xyflow/react";
 import React, { ReactNode } from "react";
 import NodeInputField from "../node-input-field";
 import { HandleColor } from "../../common";
+import { useFlowValidation } from "@/components/context/FlowInputsValidationContext";
 
 export default function NodeInputsContainer({
   children,
@@ -20,13 +21,22 @@ export function NodeInput({
   input: TaskInputs;
   nodeId: string;
 }) {
+  const { invalidInputs } = useFlowValidation();
   const edges = useEdges();
   const isConnected = edges.some((edge) => {
     return edge.target === nodeId && edge.targetHandle === input.name;
   });
+  const isInputHasInValidationError = invalidInputs
+    .find((node) => node.nodeId === nodeId)
+    ?.inputs.find((invalidInput) => invalidInput === input.name);
   // REMEMBER: think about the isConnected and how it works
   return (
-    <div className="flex p-3 bg-muted/50 w-full relative">
+    <div
+      className={cn(
+        "flex p-3 bg-muted/50 w-full relative",
+        isInputHasInValidationError && "bg-destructive/20"
+      )}
+    >
       <NodeInputField nodeId={nodeId} input={input} isConnected={isConnected} />
       {!input.hideHandle && (
         <Handle

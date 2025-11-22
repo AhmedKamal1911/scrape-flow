@@ -1,6 +1,11 @@
-import useExecutionPlan from "@/components/hooks/use-ececution-plan";
+import useExecutionPlan from "@/hooks/use-execution-plan";
 import { Button } from "@/components/ui/button";
 import { PlayCircle } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { executeWorkflowAction } from "@/lib/server/actions/workflows/execute-workflow-action";
+import { toast } from "sonner";
+import { useReactFlow } from "@xyflow/react";
+import { useFlowValidation } from "@/components/context/FlowInputsValidationContext";
 
 export default function ExecuteWorkflowBtn({
   workflowId,
@@ -8,18 +13,62 @@ export default function ExecuteWorkflowBtn({
   workflowId: string;
 }) {
   const generateWorkflow = useExecutionPlan();
+  const { invalidInputs } = useFlowValidation();
+  const { toObject } = useReactFlow();
+  const workflowDefinition = JSON.stringify(toObject());
+  const mutation = useMutation({
+    mutationFn: executeWorkflowAction,
+    onSuccess: () => {
+      toast.success("Execution is Running", { id: "flow-execution" });
+    },
+    onError: (error) => {
+      toast.error(error.message, { id: "flow-execution" });
+    },
+  });
   return (
     <Button
       variant={"outline"}
       className=" capitalize"
+      disabled={mutation.isPending}
       onClick={() => {
         const plan = generateWorkflow();
+        if (!plan || invalidInputs.length > 0) {
+          if (invalidInputs.length > 0) {
+            toast.error(
+              <div>
+                <p>Cannot execute workflow. Missing inputs:</p>
+                <ul className="ml-4 list-disc">
+                  {invalidInputs.map((node, index) => (
+                    <li key={index}>[{node.inputs.join(", ")}]</li>
+                  ))}
+                </ul>
+              </div>,
+              {
+                duration: 8000,
+              }
+            );
+          } else {
+            toast.error(
+              "Cannot generate workflow plan. Please check your workflow inputs.",
+              {
+                duration: 5000,
+              }
+            );
+          }
+
+          return;
+        }
+
+        mutation.mutate({
+          workflowId,
+          flowDefinition: workflowDefinition,
+        });
         console.log("---plan --");
         console.table({ plan });
       }}
     >
       <PlayCircle className="text-primary" />
-      execute
+      {mutation.isPending ? "executing..." : "execute"}
     </Button>
   );
 }
