@@ -2,12 +2,19 @@
 
 import { getUserWorkflowUsecase } from "@/lib/dal";
 import { isErrorType, isPrismaError } from "@/lib/helper-utils";
+import prisma from "@/lib/prisma";
+import { FlowNode } from "@/lib/types/flowNode";
 
 import {
+  ExecutionPhaseStatus,
   WorkflowDefinition,
   WorkflowExecutionPlan,
+  WorkflowExecutionStatus,
+  WorkflowExecutionTrigger,
 } from "@/lib/types/workflow";
 import { flowToExecutionPlan } from "@/lib/workflow/execution-plan";
+import { TaskRegistry } from "@/lib/workflow/task/task-registry";
+import { redirect, RedirectType } from "next/navigation";
 
 export async function executeWorkflowAction(form: {
   workflowId: string;
@@ -40,6 +47,37 @@ export async function executeWorkflowAction(form: {
     }
     const executionPlan = result.executionPlan;
     console.log("execution plan server action", executionPlan);
+    const execution = await prisma.workflowExecution.create({
+      data: {
+        workflowId,
+        userId: workflow.userId,
+        status: WorkflowExecutionStatus.PENDING,
+        startedAt: new Date(),
+        trigger: WorkflowExecutionTrigger.MANUAL,
+        phases: {
+          create: executionPlan.flatMap((phase) => {
+            return phase.nodes.flatMap((node) => {
+              const flowNode = node as FlowNode;
+              return {
+                userId: workflow.userId,
+                status: ExecutionPhaseStatus.CREATED,
+                number: phase.phaseNumber,
+                node: JSON.stringify(flowNode),
+                name: TaskRegistry[flowNode.data.type].label,
+              };
+            });
+          }),
+        },
+      },
+      select: {
+        id: true,
+        phases: true,
+      },
+    });
+    if (!execution) {
+      throw new Error("Failed to create workflow execution!");
+    }
+    return execution.id;
   } catch (error) {
     if (isPrismaError(error)) {
       throw new Error(

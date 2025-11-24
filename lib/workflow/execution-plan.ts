@@ -33,7 +33,7 @@ export function flowToExecutionPlan(
   }
   const executionPlan: WorkflowExecutionPlanPhase[] = [
     {
-      phase: 1,
+      phaseNumber: 1,
       nodes: [startedEntryPoint],
     },
   ];
@@ -58,7 +58,10 @@ export function flowToExecutionPlan(
     phase <= nodes.length && planned.size < nodes.length;
     phase++
   ) {
-    const nextPhase: WorkflowExecutionPlanPhase = { phase, nodes: [] };
+    const nextPhase: WorkflowExecutionPlanPhase = {
+      phaseNumber: phase,
+      nodes: [],
+    };
     // We will looping on every node to decide if we should push it in this phase or not
     for (const currentNode of nodes) {
       if (planned.has(currentNode.id)) {

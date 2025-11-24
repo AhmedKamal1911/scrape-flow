@@ -1,5 +1,5 @@
 "use client";
-import { Workflow } from "@prisma/client";
+
 import React from "react";
 import { ReactFlowProvider } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -9,6 +9,7 @@ import WorkflowTopbar from "./workflow-topbar/workflow-topbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import TaskMenuSidebar from "./task-menu-sidebar";
 import { FlowInputsValidationContextProvider } from "@/components/context/FlowInputsValidationContext";
+import { Workflow } from "@/generated/prisma/client";
 type Props = {
   workflow: Workflow;
 };
@@ -24,7 +25,7 @@ export default function EditorBox({ workflow }: Props) {
             <div className="flex flex-col flex-1">
               <WorkflowTopbar
                 title="workflow editor"
-                subTitle="edit your workflow here"
+                subTitle="Edit your workflow here"
                 workflowId={workflow.id}
               />
 

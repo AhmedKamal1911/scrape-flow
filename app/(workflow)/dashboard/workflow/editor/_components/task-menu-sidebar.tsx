@@ -12,7 +12,6 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenuItem,
-  SidebarMenuSub,
 } from "@/components/ui/sidebar";
 import { NodeTaskType } from "@/lib/types/nodeTask";
 import { cn } from "@/lib/utils";

@@ -3,8 +3,9 @@ import { cn } from "@/lib/utils";
 import { Handle, Position, useEdges } from "@xyflow/react";
 import React, { ReactNode } from "react";
 import NodeInputField from "../node-input-field";
-import { HandleColor } from "../../common";
+
 import { useFlowValidation } from "@/components/context/FlowInputsValidationContext";
+import { HandleColor } from "../../common";
 
 export default function NodeInputsContainer({
   children,

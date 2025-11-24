@@ -11,10 +11,12 @@ export default function WorkflowTopbar({
   title,
   subTitle,
   workflowId,
+  hideButtons = false,
 }: {
   title: string;
   subTitle?: string;
   workflowId: string;
+  hideButtons?: boolean;
 }) {
   const router = useRouter();
   return (
@@ -28,17 +30,19 @@ export default function WorkflowTopbar({
         <div>
           <p className="font-bold truncate capitalize">{title}</p>
           {subTitle && (
-            <span className="text-xs text-muted-foreground truncate capitalize">
+            <span className="text-xs text-muted-foreground truncate">
               {subTitle}
             </span>
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-3 max-[300px]:self-center">
-        <ExecuteWorkflowBtn workflowId={workflowId} />
-        <SaveEditBtn workflowId={workflowId} />
-      </div>
+      {!hideButtons && (
+        <div className="flex items-center gap-3 max-[300px]:self-center">
+          <ExecuteWorkflowBtn workflowId={workflowId} />
+          <SaveEditBtn workflowId={workflowId} />
+        </div>
+      )}
     </header>
   );
 }

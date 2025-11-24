@@ -194,7 +194,7 @@ body {
 }
 
 @utility container {
-  padding-inline: 10px;
+  padding-inline: 8px;
   margin-inline: auto;
   @variant sm {
     padding-inline: 20px;
@@ -202,7 +202,8 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {

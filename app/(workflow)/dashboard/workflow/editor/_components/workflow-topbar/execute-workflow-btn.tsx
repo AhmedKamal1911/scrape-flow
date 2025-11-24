@@ -6,23 +6,28 @@ import { executeWorkflowAction } from "@/lib/server/actions/workflows/execute-wo
 import { toast } from "sonner";
 import { useReactFlow } from "@xyflow/react";
 import { useFlowValidation } from "@/components/context/FlowInputsValidationContext";
+import { useRouter } from "next/navigation";
 
 export default function ExecuteWorkflowBtn({
   workflowId,
 }: {
   workflowId: string;
 }) {
+  const router = useRouter();
   const generateWorkflow = useExecutionPlan();
   const { invalidInputs } = useFlowValidation();
   const { toObject } = useReactFlow();
   const workflowDefinition = JSON.stringify(toObject());
   const mutation = useMutation({
     mutationFn: executeWorkflowAction,
-    onSuccess: () => {
+    onSuccess: (executionId) => {
       toast.success("Execution is Running", { id: "flow-execution" });
+      console.log({ executionId });
+      router.replace(`/dashboard/workflow/runs/${workflowId}/${executionId}`);
     },
     onError: (error) => {
       toast.error(error.message, { id: "flow-execution" });
+      // TODO: handle the network error here
     },
   });
   return (
@@ -48,12 +53,12 @@ export default function ExecuteWorkflowBtn({
               }
             );
           } else {
-            toast.error(
-              "Cannot generate workflow plan. Please check your workflow inputs.",
-              {
-                duration: 5000,
-              }
-            );
+            // toast.error(
+            //   "Cannot generate workflow plan. Please check your workflow inputs.",
+            //   {
+            //     duration: 5000,
+            //   }
+            // );
           }
 
           return;
