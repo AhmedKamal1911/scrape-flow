@@ -37,8 +37,13 @@ export default function ExecuteWorkflowBtn({
       disabled={mutation.isPending}
       onClick={() => {
         const plan = generateWorkflow();
-        if (!plan || invalidInputs.length > 0) {
-          if (invalidInputs.length > 0) {
+        console.log("plan in client", { plan });
+
+        const hasMissingInputs = invalidInputs.length > 0;
+        const hasNoPlan = !plan || plan.length === 0; // ← صح
+        // TODO: fix the validation when it's changing from invalid to be valid it's shows error and it should not
+        if (hasMissingInputs || hasNoPlan) {
+          if (hasMissingInputs) {
             toast.error(
               <div>
                 <p>Cannot execute workflow. Missing inputs:</p>

@@ -1,7 +1,11 @@
 "use server";
 
 import { getUserWorkflowUsecase } from "@/lib/dal";
-import { isErrorType, isPrismaError } from "@/lib/helper-utils";
+import {
+  isErrorType,
+  isPrismaError,
+} from "@/lib/helper-utils/error-type-guards";
+
 import prisma from "@/lib/prisma";
 import { FlowNode } from "@/lib/types/flowNode";
 

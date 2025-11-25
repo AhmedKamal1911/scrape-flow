@@ -1,6 +1,9 @@
 "use server";
 
-import { isErrorType, isPrismaError } from "@/lib/helper-utils";
+import {
+  isErrorType,
+  isPrismaError,
+} from "@/lib/helper-utils/error-type-guards";
 import prisma from "@/lib/prisma";
 
 import { auth } from "@clerk/nextjs/server";

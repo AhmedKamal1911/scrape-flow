@@ -149,6 +149,7 @@ export default function FlowEditor({ workflow }: { workflow: Workflow }) {
   return (
     <main className="size-full flex-1">
       <ReactFlow
+        className="h-[900px]!"
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}

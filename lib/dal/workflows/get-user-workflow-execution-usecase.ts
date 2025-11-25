@@ -1,5 +1,4 @@
-import { requireAuth } from "@/lib/helper-utils";
-
+import { requireAuth } from "@/lib/helper-utils/require-auth";
 import { getUserWorkflowExecutionWithPhases } from "@/lib/queries/workflow/get-user-workflow-execution-with-phases";
 
 export async function getUserWorkflowExecutionUsecase(executionId: string) {

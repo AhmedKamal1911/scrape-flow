@@ -5,7 +5,7 @@ import Logo from "@/components/common/logo";
 
 export default function layout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col min-h-screen">
       {children}
       <Separator />
       <footer className="flex items-center justify-between p-2 min-h-14 z-100 bg-background">

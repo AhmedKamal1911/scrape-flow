@@ -1,4 +1,4 @@
-import { requireAuth } from "@/lib/helper-utils";
+import { requireAuth } from "@/lib/helper-utils/require-auth";
 import { getUserWorkflows } from "@/lib/queries/workflow/get-user-workflows";
 
 export async function getUserWorkflowsUsecase() {

@@ -20,8 +20,8 @@ export default function useExecutionPlan() {
 
           break;
         case FlowValidationInputsError.INVALID_INPUTS:
-          toast.error("Please fill all inputs values!");
           setInvalidInputs(error.invalidElements!);
+          toast.error("Please fill all inputs values!");
           break;
 
         default:
@@ -32,6 +32,7 @@ export default function useExecutionPlan() {
     [setInvalidInputs]
   );
   const generateExecuationPlan = useCallback(() => {
+    clearErrors();
     const { nodes, edges } = toObject();
     const { executionPlan, error } = flowToExecutionPlan(
       nodes as FlowNode[],
@@ -41,7 +42,7 @@ export default function useExecutionPlan() {
       handleError(error);
       return null;
     }
-    clearErrors();
+
     return executionPlan;
   }, [toObject, clearErrors, handleError]);
   return generateExecuationPlan;
