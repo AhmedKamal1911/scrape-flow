@@ -147,38 +147,35 @@ export default function FlowEditor({ workflow }: { workflow: Workflow }) {
     [nodes, edges]
   );
   return (
-    <main className="size-full flex-1">
-      <ReactFlow
-        className="h-[900px]!"
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgeChange}
-        onBeforeDelete={onBeforeDelete}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        onDragOver={onDragOver}
-        onDrop={onDrop}
-        onConnect={onConnect}
-        isValidConnection={isValidConnection}
-        fitViewOptions={fitViewOptions}
-        fitView
-      >
-        <Controls position="top-left" fitViewOptions={fitViewOptions} />
-        <Background
-          variant={BackgroundVariant.Lines}
-          gap={12}
-          size={1}
-          className="bg-secondary!"
-          color="var(--sidebar-accent)"
-        />
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgeChange}
+      onBeforeDelete={onBeforeDelete}
+      nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+      onConnect={onConnect}
+      isValidConnection={isValidConnection}
+      fitViewOptions={fitViewOptions}
+      fitView
+    >
+      <Controls position="top-left" fitViewOptions={fitViewOptions} />
+      <Background
+        variant={BackgroundVariant.Lines}
+        gap={12}
+        size={1}
+        className="bg-secondary!"
+        color="var(--sidebar-accent)"
+      />
 
-        <SidebarTrigger
-          variant={"default"}
-          className="absolute top-31 left-3.5 opacity-100! hover:opacity-100! z-100 bg-primary/80 rounded-sm cursor-pointer"
-          size={"icon"}
-        />
-      </ReactFlow>
-    </main>
+      <SidebarTrigger
+        variant={"default"}
+        className="absolute top-31 left-3.5 opacity-100! hover:opacity-100! z-100 bg-primary/80 rounded-sm cursor-pointer"
+        size={"icon"}
+      />
+    </ReactFlow>
   );
 }

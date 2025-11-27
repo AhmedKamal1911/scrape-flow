@@ -12,13 +12,11 @@ import { FlowNode } from "@/lib/types/flowNode";
 import {
   ExecutionPhaseStatus,
   WorkflowDefinition,
-  WorkflowExecutionPlan,
   WorkflowExecutionStatus,
   WorkflowExecutionTrigger,
 } from "@/lib/types/workflow";
 import { flowToExecutionPlan } from "@/lib/workflow/execution-plan";
 import { TaskRegistry } from "@/lib/workflow/task/task-registry";
-import { redirect, RedirectType } from "next/navigation";
 
 export async function executeWorkflowAction(form: {
   workflowId: string;

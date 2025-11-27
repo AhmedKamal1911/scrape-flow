@@ -4,8 +4,7 @@ import { PlayCircle } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { executeWorkflowAction } from "@/lib/server/actions/workflows/execute-workflow-action";
 import { toast } from "sonner";
-import { useReactFlow } from "@xyflow/react";
-import { useFlowValidation } from "@/components/context/FlowInputsValidationContext";
+import { useEdges, useNodes } from "@xyflow/react";
 import { useRouter } from "next/navigation";
 
 export default function ExecuteWorkflowBtn({
@@ -14,10 +13,11 @@ export default function ExecuteWorkflowBtn({
   workflowId: string;
 }) {
   const router = useRouter();
-  const generateWorkflow = useExecutionPlan();
-  const { invalidInputs } = useFlowValidation();
-  const { toObject } = useReactFlow();
-  const workflowDefinition = JSON.stringify(toObject());
+  const generateWorkflowPlan = useExecutionPlan();
+
+  const nodes = useNodes();
+  const edges = useEdges();
+  const flowDefinition = JSON.stringify({ nodes, edges });
   const mutation = useMutation({
     mutationFn: executeWorkflowAction,
     onSuccess: (executionId) => {
@@ -36,19 +36,15 @@ export default function ExecuteWorkflowBtn({
       className=" capitalize"
       disabled={mutation.isPending}
       onClick={() => {
-        const plan = generateWorkflow();
-        console.log("plan in client", { plan });
-
-        const hasMissingInputs = invalidInputs.length > 0;
-        const hasNoPlan = !plan || plan.length === 0; // ← صح
-        // TODO: fix the validation when it's changing from invalid to be valid it's shows error and it should not
-        if (hasMissingInputs || hasNoPlan) {
+        const { executionPlan, error } = generateWorkflowPlan();
+        if (error) {
+          const hasMissingInputs = Array.isArray(error.invalidElements);
           if (hasMissingInputs) {
             toast.error(
               <div>
                 <p>Cannot execute workflow. Missing inputs:</p>
                 <ul className="ml-4 list-disc">
-                  {invalidInputs.map((node, index) => (
+                  {error.invalidElements!.map((node, index) => (
                     <li key={index}>[{node.inputs.join(", ")}]</li>
                   ))}
                 </ul>
@@ -57,24 +53,26 @@ export default function ExecuteWorkflowBtn({
                 duration: 8000,
               }
             );
-          } else {
-            // toast.error(
-            //   "Cannot generate workflow plan. Please check your workflow inputs.",
-            //   {
-            //     duration: 5000,
-            //   }
-            // );
           }
+          return;
+        }
 
+        if (executionPlan && executionPlan.length === 0) {
+          toast.error(
+            "Cannot generate workflow plan. Please check your workflow inputs.",
+            {
+              duration: 5000,
+            }
+          );
           return;
         }
 
         mutation.mutate({
           workflowId,
-          flowDefinition: workflowDefinition,
+          flowDefinition: flowDefinition,
         });
         console.log("---plan --");
-        console.table({ plan });
+        console.table({ executionPlan });
       }}
     >
       <PlayCircle className="text-primary" />

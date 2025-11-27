@@ -12,8 +12,8 @@ export type ErrorValidationInputs = {
   invalidElements?: FlowNodeMissingInputs[];
 };
 type FlowToExecutionPlanType = {
-  executionPlan?: WorkflowExecutionPlanPhase[];
-  error?: ErrorValidationInputs;
+  executionPlan: WorkflowExecutionPlanPhase[] | null;
+  error: ErrorValidationInputs | null;
 };
 export function flowToExecutionPlan(
   nodes: FlowNode[],
@@ -26,6 +26,7 @@ export function flowToExecutionPlan(
   );
   if (!startedEntryPoint) {
     return {
+      executionPlan: null,
       error: {
         type: FlowValidationInputsError.NO_STARTING_POINT,
       },
@@ -104,13 +105,14 @@ export function flowToExecutionPlan(
   if (invalidInputsErrors.length > 0) {
     console.log({ invalidInputsErrors });
     return {
+      executionPlan: null,
       error: {
         type: FlowValidationInputsError.INVALID_INPUTS,
         invalidElements: invalidInputsErrors,
       },
     };
   }
-  return { executionPlan };
+  return { executionPlan, error: null };
 }
 
 function getInvalidInputs({

@@ -1,4 +1,16 @@
 -- CreateTable
+CREATE TABLE "Workflow" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "definition" TEXT NOT NULL,
+    "status" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "WorkflowExecution" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "workflowId" TEXT NOT NULL,
@@ -23,7 +35,10 @@ CREATE TABLE "ExecutionPhase" (
     "completedAt" DATETIME,
     "inputs" TEXT,
     "outputs" TEXT,
-    "creditsCost" INTEGER,
+    "creditsConsumed" INTEGER,
     "workflowExecutionId" TEXT NOT NULL,
     CONSTRAINT "ExecutionPhase_workflowExecutionId_fkey" FOREIGN KEY ("workflowExecutionId") REFERENCES "WorkflowExecution" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Workflow_name_userId_key" ON "Workflow"("name", "userId");

@@ -2,8 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -48,7 +47,7 @@ model ExecutionPhase {
   completedAt         DateTime?
   inputs              String?
   outputs             String?
-  creditsCost         Int?
+  creditsConsumed     Int?
   workflowExecutionId String
   execution           WorkflowExecution @relation(fields: [workflowExecutionId], references: [id], onDelete: Cascade)
 }

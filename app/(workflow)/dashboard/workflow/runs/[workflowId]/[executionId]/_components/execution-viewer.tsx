@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import React, { ReactNode } from "react";
 import { datesToDurationString } from "@/lib/helper-utils/dates";
+import { getPhasesTotalCost } from "@/lib/helper-utils/get-phases-total-cost";
 
 export type ExecutionWithPhases = Awaited<
   ReturnType<typeof getUserWorkflowExecutionWithPhases>
@@ -37,16 +38,14 @@ export default function ExecutionViewer({ initialData }: Props) {
   });
 
   return (
-    <>
-      <div className="flex h-screen overflow-hidden">
-        <ExecutionViewerAside execution={query.data} />
-        <div className="flex-1 overflow-y-auto bg-background p-4 border-r border-r-muted">
-          {Array.from({ length: 30 }).map((_, i) => (
-            <div key={i} className="size-20 bg-gray-500 mb-3" />
-          ))}
-        </div>
+    <div className="flex">
+      <ExecutionViewerAside execution={query.data} />
+      <div className="flex-1 overflow-y-auto bg-background p-4 border-r border-r-muted">
+        {Array.from({ length: 30 }).map((_, i) => (
+          <div key={i} className="size-20 bg-gray-500 mb-3" />
+        ))}
       </div>
-    </>
+    </div>
   );
 }
 
@@ -59,8 +58,9 @@ function ExecutionViewerAside({
     completedAt: execution?.completedAt,
     startedAt: execution?.startedAt,
   });
+  const creditsConsumed = getPhasesTotalCost(execution?.phases || []);
   return (
-    <aside className="w-[440px] min-w-[440px] max-w-[440px] bg-sidebar border-r-2 border-separate flex flex-grow flex-col overflow-hidden">
+    <aside className="sticky top-[70px] w-[440px] min-w-[440px] max-w-[440px]  border-r-2 border-separate flex flex-col h-[calc(100vh-70px)] overflow-auto bg-sidebar">
       <div className="p-3">
         <ExecutionDetailBox
           icon={CircleDashed}
@@ -106,7 +106,7 @@ function ExecutionViewerAside({
         <GitGraph />
         <span>phases</span>
       </div>
-      <div className="p-3 flex flex-col gap-1 h-full overflow-auto">
+      <div className="p-3 flex flex-col gap-1">
         {execution?.phases.map((phase, i) => (
           <Button
             className="w-full justify-between text-start h-fit"

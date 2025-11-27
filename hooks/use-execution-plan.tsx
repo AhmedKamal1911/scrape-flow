@@ -39,11 +39,12 @@ export default function useExecutionPlan() {
       edges
     );
     if (error) {
+      console.log({ error });
       handleError(error);
-      return null;
+      return { executionPlan: null, error };
     }
 
-    return executionPlan;
-  }, [toObject, clearErrors, handleError]);
+    return { executionPlan, error: null };
+  }, [clearErrors, toObject, handleError]);
   return generateExecuationPlan;
 }
