@@ -14,10 +14,10 @@ export const HtmlPageTask = {
       name: "Web page",
       required: true,
     },
-  ],
+  ] as const,
   outputs: [
     { name: "Html", type: NodeTaskInputType.STRING },
     { name: "Web page", type: NodeTaskInputType.BROWSER_INSTANCE },
-  ],
+  ] as const,
   credits: 2,
 } satisfies WorkflowTask;

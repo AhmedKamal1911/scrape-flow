@@ -41,6 +41,6 @@ async function ExecutionViewerWrapper({
   const workflowExecution = await getUserWorkflowExecutionUsecase(executionId);
   if (!workflowExecution) return notFound();
   // TODO: dont forget to make notfound page for workfloweditor page and this page
-  await waitFor(5000);
+  // await waitFor(5000);
   return <ExecutionViewer initialData={workflowExecution} />;
 }

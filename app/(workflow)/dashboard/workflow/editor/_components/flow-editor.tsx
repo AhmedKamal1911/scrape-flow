@@ -25,7 +25,7 @@ import { NodeTaskType } from "@/lib/types/nodeTask";
 import DeletableEdge from "./deletable-edge";
 import { toast } from "sonner";
 import { TaskRegistry } from "@/lib/workflow/task/task-registry";
-import { Workflow } from "@/generated/prisma/client";
+import { Workflow } from "@prisma/client";
 const nodeTypes = {
   FlowScrapeNode: CustomNodeComponent,
 };

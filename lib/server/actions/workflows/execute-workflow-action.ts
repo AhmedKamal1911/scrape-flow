@@ -15,8 +15,10 @@ import {
   WorkflowExecutionStatus,
   WorkflowExecutionTrigger,
 } from "@/lib/types/workflow";
+import { executeWorkflow } from "@/lib/workflow/execute-workflow";
 import { flowToExecutionPlan } from "@/lib/workflow/execution-plan";
 import { TaskRegistry } from "@/lib/workflow/task/task-registry";
+import { revalidatePath } from "next/cache";
 
 export async function executeWorkflowAction(form: {
   workflowId: string;
@@ -56,6 +58,7 @@ export async function executeWorkflowAction(form: {
         status: WorkflowExecutionStatus.PENDING,
         startedAt: new Date(),
         trigger: WorkflowExecutionTrigger.MANUAL,
+        definition: flowDefinition,
         phases: {
           create: executionPlan.flatMap((phase) => {
             return phase.nodes.flatMap((node) => {
@@ -79,6 +82,8 @@ export async function executeWorkflowAction(form: {
     if (!execution) {
       throw new Error("Failed to create workflow execution!");
     }
+    executeWorkflow(execution.id);
+    revalidatePath(`/dashboard/workflow/runs/${workflowId}/${execution.id}`);
     return execution.id;
   } catch (error) {
     if (isPrismaError(error)) {

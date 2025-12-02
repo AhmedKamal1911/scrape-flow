@@ -17,9 +17,10 @@ import {
   Loader,
   LucideIcon,
 } from "lucide-react";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState } from "react";
 import { datesToDurationString } from "@/lib/helper-utils/dates";
 import { getPhasesTotalCost } from "@/lib/helper-utils/get-phases-total-cost";
+import { getWorkflowPhaseDetails } from "@/lib/server/queries/workflows/get-workflow-phase-details";
 
 export type ExecutionWithPhases = Awaited<
   ReturnType<typeof getUserWorkflowExecutionWithPhases>
@@ -29,21 +30,29 @@ type Props = {
 };
 
 export default function ExecutionViewer({ initialData }: Props) {
+  const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
   const query = useQuery({
     queryKey: ["execution", initialData?.id],
     queryFn: async () => getWorkflowExecution(initialData!.id),
-    initialData, // ✨ مهم هنا
+    initialData,
     refetchInterval: (q) =>
       q.state.data?.status === WorkflowExecutionStatus.RUNNING ? 1000 : false,
   });
 
+  const phaseDetails = useQuery({
+    queryKey: ["phaseDetails", selectedPhase],
+    enabled: selectedPhase !== null,
+    queryFn: () => getWorkflowPhaseDetails(selectedPhase!),
+  });
   return (
     <div className="flex">
-      <ExecutionViewerAside execution={query.data} />
+      <ExecutionViewerAside
+        selectedPhase={selectedPhase}
+        setSelectedPhase={setSelectedPhase}
+        execution={query.data}
+      />
       <div className="flex-1 overflow-y-auto bg-background p-4 border-r border-r-muted">
-        {Array.from({ length: 30 }).map((_, i) => (
-          <div key={i} className="size-20 bg-gray-500 mb-3" />
-        ))}
+        <pre>{JSON.stringify(phaseDetails.data, null, 4)}</pre>
       </div>
     </div>
   );
@@ -51,14 +60,21 @@ export default function ExecutionViewer({ initialData }: Props) {
 
 function ExecutionViewerAside({
   execution,
+  selectedPhase,
+  setSelectedPhase,
 }: {
   execution: ExecutionWithPhases;
+  selectedPhase: string | null;
+  setSelectedPhase: (phaseId: string) => void;
 }) {
   const duration = datesToDurationString({
     completedAt: execution?.completedAt,
     startedAt: execution?.startedAt,
   });
-  const creditsConsumed = getPhasesTotalCost(execution?.phases || []);
+  console.log({ duration });
+  const creditsConsumed = getPhasesTotalCost({
+    phases: execution?.phases || [],
+  });
   return (
     <aside className="sticky top-[70px] w-[440px] min-w-[440px] max-w-[440px]  border-r-2 border-separate flex flex-col h-[calc(100vh-70px)] overflow-auto bg-sidebar">
       <div className="p-3">
@@ -86,8 +102,6 @@ function ExecutionViewerAside({
           }
         />
 
-        {/* TODO: add formate distance to now fn from date-fns */}
-
         <ExecutionDetailBox
           icon={Clock}
           label="duration"
@@ -98,7 +112,7 @@ function ExecutionViewerAside({
         <ExecutionDetailBox
           icon={Coins}
           label="credits consumed"
-          value={"TODO"}
+          value={creditsConsumed}
         />
       </div>
 
@@ -109,14 +123,23 @@ function ExecutionViewerAside({
       <div className="p-3 flex flex-col gap-1">
         {execution?.phases.map((phase, i) => (
           <Button
-            className="w-full justify-between text-start h-fit"
-            variant={"sidebarItem"}
+            className="w-full justify-between text-start h-fit cursor-pointer"
+            variant={selectedPhase === phase.id ? "secondary" : "sidebarItem"}
             key={i}
+            onClick={() => {
+              if (execution.status === WorkflowExecutionStatus.RUNNING) return;
+              setSelectedPhase(phase.id);
+            }}
           >
-            <Badge className="size-7 rounded-sm font-semibold text-lg">
-              {i + 1}
-            </Badge>
-            <p className="flex-1 font-semibold">{phase.name}</p>
+            <div className="flex items-center gap-2">
+              <Badge className="size-7 rounded-sm font-semibold text-lg">
+                {i + 1}
+              </Badge>
+              <p className="flex-1 font-semibold">{phase.name}</p>
+            </div>
+            <span className="text-muted-foreground text-xs font-semibold">
+              {phase.status}
+            </span>
           </Button>
         ))}
       </div>
