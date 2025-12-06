@@ -167,7 +167,7 @@ export default function FlowEditor({ workflow }: { workflow: Workflow }) {
         variant={BackgroundVariant.Lines}
         gap={12}
         size={1}
-        className="bg-secondary!"
+        // className="bg-secondary!"
         color="var(--sidebar-accent)"
       />
 

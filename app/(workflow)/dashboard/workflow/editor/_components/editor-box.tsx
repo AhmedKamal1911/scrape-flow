@@ -9,7 +9,8 @@ import WorkflowTopbar from "./workflow-topbar/workflow-topbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import TaskMenuSidebar from "./task-menu-sidebar";
 import { FlowInputsValidationContextProvider } from "@/components/context/FlowInputsValidationContext";
-import { Workflow } from "@/generated/prisma/client";
+import { Workflow } from "@prisma/client";
+
 type Props = {
   workflow: Workflow;
 };

@@ -4,7 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getUserWorkflowExecutionWithPhases } from "@/lib/queries/workflow/get-user-workflow-execution-with-phases";
 import { getWorkflowExecution } from "@/lib/server/queries/workflows/get-workflow-execution";
-import { WorkflowExecutionStatus } from "@/lib/types/workflow";
+import {
+  ExecutionPhaseStatus,
+  WorkflowExecutionStatus,
+} from "@/lib/types/workflow";
 import { formatDistanceToNow } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -13,14 +16,36 @@ import {
   CircleDashed,
   Clock,
   Coins,
+  DollarSign,
   GitGraph,
   Loader,
   LucideIcon,
+  MousePointerClick,
 } from "lucide-react";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { datesToDurationString } from "@/lib/helper-utils/dates";
 import { getPhasesTotalCost } from "@/lib/helper-utils/get-phases-total-cost";
 import { getWorkflowPhaseDetails } from "@/lib/server/queries/workflows/get-workflow-phase-details";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ExecutionLog } from "@prisma/client";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils";
+import { LogLevel } from "@/lib/types/log";
+import PhaseStatusBadge from "./phase-status-badge";
 
 export type ExecutionWithPhases = Awaited<
   ReturnType<typeof getUserWorkflowExecutionWithPhases>
@@ -36,7 +61,7 @@ export default function ExecutionViewer({ initialData }: Props) {
     queryFn: async () => getWorkflowExecution(initialData!.id),
     initialData,
     refetchInterval: (q) =>
-      q.state.data?.status === WorkflowExecutionStatus.RUNNING ? 1000 : false,
+      q.state.data?.status === WorkflowExecutionStatus.RUNNING ? 3000 : false,
   });
 
   const phaseDetails = useQuery({
@@ -44,15 +69,103 @@ export default function ExecutionViewer({ initialData }: Props) {
     enabled: selectedPhase !== null,
     queryFn: () => getWorkflowPhaseDetails(selectedPhase!),
   });
+  const duration = datesToDurationString({
+    completedAt: query.data?.completedAt,
+    startedAt: query.data?.startedAt,
+  });
+  const creditsConsumed = getPhasesTotalCost({
+    phases: (phaseDetails.data as ExecutionWithPhases)?.phases || [],
+  });
+  const isRunning = query.data?.status === WorkflowExecutionStatus.RUNNING;
+
+  // useEffect(() => {
+  //   const phases = query.data?.phases || [];
+  //   if (isRunning) {
+  //     const currentRunningPhase = phases.toSorted((a, b) =>
+  //       a.startedAt! > b.startedAt! ? -1 : 1
+  //     )[0];
+  //     setSelectedPhase(currentRunningPhase.id);
+  //     return;
+  //   }
+  //   const currentRunningPhase = phases.toSorted((a, b) =>
+  //     a.completedAt! > b.completedAt! ? -1 : 1
+  //   )[0];
+  //   setSelectedPhase(currentRunningPhase.id);
+  // }, [isRunning, query.data?.phases]);
+
+  useEffect(() => {
+    const phases = query.data?.phases ?? [];
+    if (phases.length === 0) return;
+
+    const key = isRunning ? "startedAt" : "completedAt";
+
+    const sorted = phases
+      .filter((p) => p[key]) // شيل phases اللي مفيهاش التاريخ المطلوب
+      .toSorted((a, b) => (a[key]! > b[key]! ? -1 : 1));
+
+    if (sorted.length > 0) {
+      setSelectedPhase(sorted[0].id);
+    }
+  }, [isRunning, query.data?.phases]);
+
   return (
     <div className="flex">
       <ExecutionViewerAside
+        isRunning={isRunning}
+        duration={duration}
+        creditsConsumed={creditsConsumed}
         selectedPhase={selectedPhase}
         setSelectedPhase={setSelectedPhase}
         execution={query.data}
       />
-      <div className="flex-1 overflow-y-auto bg-background p-4 border-r border-r-muted">
-        <pre>{JSON.stringify(phaseDetails.data, null, 4)}</pre>
+      <div className="flex-1 bg-background p-4 border-r border-r-muted">
+        {isRunning ? (
+          <ExecutionRunningLoader />
+        ) : (
+          !selectedPhase && <NoPhaseSelected />
+        )}
+        {!isRunning && selectedPhase && phaseDetails.data && (
+          <div className="container">
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <Badge
+                  variant={"outline"}
+                  className="capitalize gap-3 text-sm sm:text-md h-fit p-2"
+                >
+                  <div className="flex gap-1">
+                    <DollarSign size={20} className="stroke-muted-foreground" />
+                    <span>credits</span>
+                  </div>
+                  <span>TODO</span>
+                </Badge>
+                <Badge
+                  variant={"outline"}
+                  className="capitalize gap-3 text-sm sm:text-md h-fit p-2"
+                >
+                  <div className="flex gap-1">
+                    <Clock size={20} className="stroke-muted-foreground" />
+                    <span>duration</span>
+                  </div>
+                  <span>{duration}</span>
+                </Badge>
+              </div>
+
+              <ParamsViewer
+                title="inputs"
+                subTitle="phase related inputs"
+                paramsJson={phaseDetails.data.inputs}
+              />
+              <ParamsViewer
+                title="outputs"
+                subTitle="phase related outputs"
+                paramsJson={phaseDetails.data.outputs}
+              />
+              {phaseDetails.data.executionLogs.length !== 0 && (
+                <LogsViewer logs={phaseDetails.data.executionLogs} />
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -62,19 +175,19 @@ function ExecutionViewerAside({
   execution,
   selectedPhase,
   setSelectedPhase,
+  isRunning,
+  duration,
+  creditsConsumed,
 }: {
   execution: ExecutionWithPhases;
   selectedPhase: string | null;
   setSelectedPhase: (phaseId: string) => void;
+  isRunning: boolean;
+  duration: string | null;
+  creditsConsumed: number;
 }) {
-  const duration = datesToDurationString({
-    completedAt: execution?.completedAt,
-    startedAt: execution?.startedAt,
-  });
   console.log({ duration });
-  const creditsConsumed = getPhasesTotalCost({
-    phases: execution?.phases || [],
-  });
+
   return (
     <aside className="sticky top-[70px] w-[440px] min-w-[440px] max-w-[440px]  border-r-2 border-separate flex flex-col h-[calc(100vh-70px)] overflow-auto bg-sidebar">
       <div className="p-3">
@@ -127,7 +240,7 @@ function ExecutionViewerAside({
             variant={selectedPhase === phase.id ? "secondary" : "sidebarItem"}
             key={i}
             onClick={() => {
-              if (execution.status === WorkflowExecutionStatus.RUNNING) return;
+              if (isRunning) return;
               setSelectedPhase(phase.id);
             }}
           >
@@ -137,9 +250,7 @@ function ExecutionViewerAside({
               </Badge>
               <p className="flex-1 font-semibold">{phase.name}</p>
             </div>
-            <span className="text-muted-foreground text-xs font-semibold">
-              {phase.status}
-            </span>
+            <PhaseStatusBadge status={phase.status as ExecutionPhaseStatus} />
           </Button>
         ))}
       </div>
@@ -147,6 +258,96 @@ function ExecutionViewerAside({
   );
 }
 
+function ParamsViewer({
+  title,
+  subTitle,
+  paramsJson,
+}: {
+  title: string;
+  subTitle: string;
+  paramsJson: string | null;
+}) {
+  const inputs = paramsJson ? JSON.parse(paramsJson) : undefined;
+  return (
+    <Card className="shadow-lg py-0 overflow-hidden gap-2 capitalize">
+      <CardHeader className="rounded-lg rounded-b-none border-b py-4  bg-secondary/30">
+        <CardTitle className=" text-base">{title}</CardTitle>
+        <CardDescription className=" text-sm text-muted-foreground">
+          {subTitle}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="py-3">
+        <div className="flex flex-col gap-2">
+          {!inputs || Object.keys(inputs).length === 0 ? (
+            <p className="font-semibold">no params in this phase</p>
+          ) : (
+            Object.entries(inputs).map(([key, value]) => (
+              <div
+                key={key}
+                className="flex justify-between items-center space-y-1"
+              >
+                <p className="text-sm text-muted-foreground flex-1 basis-1/3">
+                  {key}
+                </p>
+                <Input
+                  readOnly
+                  className="flex-1 basis-2/3"
+                  value={value as string}
+                />
+              </div>
+            ))
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+function LogsViewer({ logs }: { logs: ExecutionLog[] }) {
+  return (
+    <Card className="w-full p-0 capitalize gap-2 overflow-hidden">
+      <CardHeader className="rounded-lg rounded-b-none border-b py-3  bg-secondary/30">
+        <CardTitle className="text-base">logs</CardTitle>
+        <CardDescription className=" text-sm text-muted-foreground">
+          logs related to this phase
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="p-0">
+        <Table>
+          <TableHeader className="text-muted-foreground text-sm">
+            <TableRow>
+              <TableHead>Time</TableHead>
+              <TableHead>Level</TableHead>
+              <TableHead>Message</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {logs.map((log) => (
+              <TableRow key={log.id} className="text-muted-foreground">
+                <TableCell width={190} className="text-xs p-1 pl-2">
+                  {log.timestamp.toISOString()}
+                </TableCell>
+                <TableCell
+                  width={80}
+                  className={cn(
+                    "uppercase text-xs font-bold p-1 pl-2",
+                    (log.logLevel as LogLevel) === "error" &&
+                      "text-destructive",
+                    (log.logLevel as LogLevel) === "info" && "text-primary"
+                  )}
+                >
+                  {log.logLevel}
+                </TableCell>
+                <TableCell className="text-sm flex-1 p-1 pl-2">
+                  {log.message}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+}
 function ExecutionDetailBox({
   value,
   icon,
@@ -159,11 +360,37 @@ function ExecutionDetailBox({
   const Icon = icon;
   return (
     <div className="flex justify-between items-center text-sm px-2 py-3">
-      <div className="text-muted-foreground flex items-center gap-2 capitalize">
+      <div className=" flex items-center gap-2 capitalize">
         <Icon size={20} className="stroke-muted-foreground/80" />
         <span>{label}</span>
       </div>
       <div className="font-semibold capitalize">{value}</div>
+    </div>
+  );
+}
+
+function NoPhaseSelected() {
+  return (
+    <div className="h-full flex flex-col items-center justify-center gap-2 text-muted-foreground">
+      <MousePointerClick className="size-8 text-primary" />
+      <p className="text-xl italic font-bold capitalize">
+        no phase selected yet
+      </p>
+      <span className="text-sm text-muted-foreground">
+        Select a phase to view its details.
+      </span>
+    </div>
+  );
+}
+function ExecutionRunningLoader() {
+  return (
+    <div className="flex h-full items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <div className="size-12 animate-spin rounded-full border-4 border-muted border-t-primary" />
+        <span className="text-sm capitalize text-muted-foreground animate-pulse">
+          run is in progress, please wait...
+        </span>
+      </div>
     </div>
   );
 }

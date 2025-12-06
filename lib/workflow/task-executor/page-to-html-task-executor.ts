@@ -11,7 +11,8 @@ export async function PageToHtmlTaskExecutor(
     console.log("@page html", html);
     return true;
   } catch (error) {
-    console.error(error);
+    const e = error as Error;
+    environment.log.error(e.message);
     return false;
   }
 }

@@ -10,5 +10,12 @@ export async function getUserWorkflowPhaseDetailsUsecase(phaseId: string) {
         userId,
       },
     },
+    include: {
+      executionLogs: {
+        orderBy: {
+          timestamp: "asc",
+        },
+      },
+    },
   });
 }

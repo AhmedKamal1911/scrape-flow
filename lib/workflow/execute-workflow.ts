@@ -15,6 +15,8 @@ import { Environment, ExecutionEnv } from "../types/executor";
 import { NodeTaskInputType } from "../types/nodeTask";
 import { Browser, Page } from "puppeteer";
 import { Edge } from "@xyflow/react";
+import { LogCollector } from "../types/log";
+import { createLogCollector } from "../execution-logger";
 
 type WorkflowExecutionWithPhasesType = Awaited<
   ReturnType<typeof getWorkflowExecutionWithPhases>
@@ -28,6 +30,7 @@ export async function executeWorkflow(executionId: string) {
     workflowId: execution.workflowId,
   });
   await initializeExecutionPhaseStatuses(execution);
+
   const creditsConsumed = 0;
   let executionFailed = false;
   for (const phase of execution.phases) {
@@ -49,6 +52,14 @@ export async function executeWorkflow(executionId: string) {
     creditsConsumed,
   });
   await cleanupEnv(executionEnv);
+  // After the workflow finishes (successfully or with failure),
+  // we clean up the execution environment.
+  // This includes tearing down any resources that were created
+  // during execution—such as browser instances, cached data,
+  // temporary objects, or in-memory state stored in the Environment.
+  //
+  // cleanupEnv ensures no leftover processes or memory leaks remain
+  // after the workflow run completes.
 }
 
 async function initializeWorkflowExecution({
@@ -90,7 +101,7 @@ async function initializeExecutionPhaseStatuses(
       },
     },
     data: {
-      status: ExecutionPhaseStatus.RUNNING,
+      status: ExecutionPhaseStatus.PENDING,
     },
   });
 }
@@ -147,7 +158,7 @@ async function executeWorkflowPhase({
 }) {
   const startedAt = new Date();
   const node: FlowNode = JSON.parse(phase.node);
-
+  const logCollector = createLogCollector();
   setupEnvironmentForPhase({ node, environment, edges });
   await prisma.executionPhase.update({
     where: {
@@ -166,30 +177,38 @@ async function executeWorkflowPhase({
   );
   // TODO: dont forget to decrease the user credit
 
-  await waitFor(2000);
-  const success = await executePhase({ node, phase, environment });
+  const success = await executePhase({
+    node,
+    phase,
+    environment,
+    logCollector,
+  });
   const outputs = environment.phases[node.id].outputs;
-  await phaseFinalize(phase.id, success, outputs);
+  await phaseFinalize({ phaseId: phase.id, success, outputs, logCollector });
   return { success };
 }
 async function executePhase({
   environment,
   node,
   phase,
+  logCollector,
 }: {
   node: FlowNode;
   phase: ExecutionPhase;
   environment: Environment;
+  logCollector: LogCollector;
 }) {
   const runFunction = TaskExecutorRegistry[node.data.type];
   if (!runFunction) {
     console.error("executePhase error runFunction is not exist");
     return false;
   }
+  await waitFor(3000);
   const executionEnvironment: ExecutionEnv<WorkflowTask> =
     createExecutionEnvironment({
       node,
       environment,
+      logCollector,
     });
   return await runFunction(executionEnvironment);
 }
@@ -227,15 +246,27 @@ function setupEnvironmentForPhase({
       ];
 
     environment.phases[node.id].inputs[input.name] = outputVal;
+
+    // Resolve input dependencies for the current node.
+    // We look for an edge whose target is this node and whose targetHandle
+    // matches the current input name. This tells us which node provides the value
+    // for this input.
+    // If no edge is found, it means the input is not connected, so we skip it.
+    //
+    // Once we find the connected edge, we read the output value produced by the
+    // source node at the sourceHandle, then assign that value as the input for
+    // the current node in the execution environment.
   }
 }
 
 function createExecutionEnvironment({
   node,
   environment,
+  logCollector,
 }: {
   node: FlowNode;
   environment: Environment;
+  logCollector: LogCollector;
 }): ExecutionEnv<WorkflowTask> {
   return {
     getInput: (name: string) => environment.phases[node.id].inputs[name],
@@ -245,14 +276,21 @@ function createExecutionEnvironment({
     setBrowser: (browser: Browser) => (environment.browser = browser),
     setPage: (page: Page) => (environment.page = page),
     getPage: () => environment.page,
+    log: logCollector,
   };
 }
 
-async function phaseFinalize(
-  phaseId: string,
-  success: boolean,
-  outputs: Record<string, string>
-) {
+async function phaseFinalize({
+  logCollector,
+  outputs,
+  phaseId,
+  success,
+}: {
+  phaseId: string;
+  success: boolean;
+  outputs: Record<string, string>;
+  logCollector: LogCollector;
+}) {
   const finalStatus = success
     ? ExecutionPhaseStatus.COMPLETED
     : ExecutionPhaseStatus.FAILED;
@@ -265,6 +303,15 @@ async function phaseFinalize(
       status: finalStatus,
       completedAt: new Date(),
       outputs: JSON.stringify(outputs),
+      executionLogs: {
+        createMany: {
+          data: logCollector.getAll().map((log) => ({
+            message: log.message,
+            logLevel: log.level,
+            timestamp: log.timestamp,
+          })),
+        },
+      },
     },
   });
 }
@@ -291,4 +338,13 @@ async function cleanupEnv(env: Environment) {
       .close()
       .catch((error) => console.error(`can't close browser ,reason :${error}`));
   }
+
+  // After the workflow finishes (successfully or with failure),
+  // we clean up the execution environment.
+  // This includes tearing down any resources that were created
+  // during execution—such as browser instances, cached data,
+  // temporary objects, or in-memory state stored in the Environment.
+  //
+  // cleanupEnv ensures no leftover processes or memory leaks remain
+  // after the workflow run completes.
 }

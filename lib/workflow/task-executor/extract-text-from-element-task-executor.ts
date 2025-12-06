@@ -9,28 +9,30 @@ export async function ExtractElementFromHtmlTaskExecutor(
     const selector = environment.getInput("Selector");
     if (!selector) {
       console.error("selector not found");
+      environment.log.error("selector not defined");
       return false;
     }
     const html = environment.getInput("Html");
     if (!html) {
-      console.error("html not found");
+      environment.log.error("html not defined");
       return false;
     }
     const $ = cheerio.load(html);
     const element = $(selector);
     if (!element) {
-      console.error("element not found");
+      environment.log.error("element not found");
       return false;
     }
     const extractedText = $.text(element);
     if (!extractedText) {
-      console.error("element has no text");
+      environment.log.error("element has no text");
       return false;
     }
     environment.setOutput("Extracted text", extractedText);
     return true;
   } catch (error) {
-    console.error(error);
+    const e = error as Error;
+    environment.log.error(e.message);
     return false;
   }
 }

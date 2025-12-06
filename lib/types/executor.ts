@@ -1,5 +1,6 @@
 import { Browser, Page } from "puppeteer";
 import { WorkflowTask } from "./workflow";
+import { LogCollector } from "./log";
 
 export type Environment = {
   browser?: Browser;
@@ -20,4 +21,5 @@ export type ExecutionEnv<X extends WorkflowTask> = {
   setBrowser(browser: Browser): void;
   setPage(page: Page): void;
   getPage(): Page | undefined;
+  log: LogCollector;
 };
