@@ -38,7 +38,10 @@ export default function WorkflowCard({ workflow }: Props) {
 
           <div className="flex items-center gap-3 min-[400px]:gap-4">
             <CardTitle className="min-[400px]:text-xl capitalize">
-              <Link href={`/dashboard/workflow/editor/${workflow.id}`}>
+              <Link
+                href={`/dashboard/workflow/editor/${workflow.id}`}
+                className="hover:underline"
+              >
                 {workflow.name}
               </Link>
             </CardTitle>

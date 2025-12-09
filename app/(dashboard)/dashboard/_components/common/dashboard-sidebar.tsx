@@ -15,6 +15,7 @@ import {
 
 import { SidebarNav } from "./sidebar-nav";
 import Logo from "@/components/common/logo";
+import UserAvailableCreditsBadge from "@/components/common/user-available-credits-badge";
 
 export type Route = {
   href: string;
@@ -40,6 +41,9 @@ export default function DashboardSidebar({
       <SidebarHeader>
         <Logo />
       </SidebarHeader>
+      <div className="flex justify-center my-2">
+        <UserAvailableCreditsBadge />
+      </div>
       <SidebarContent>
         <SidebarNav routes={routes} />
       </SidebarContent>

@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import SaveEditBtn from "./save-edit-btn";
 import ExecuteWorkflowBtn from "./execute-workflow-btn";
+import NavigationTabs from "./navigation-tabs";
 
 export default function WorkflowTopbar({
   title,
@@ -21,17 +22,22 @@ export default function WorkflowTopbar({
   const router = useRouter();
   const pathname = usePathname();
   return (
-    <header className="flex justify-between items-center gap-2 p-2 min-h-[70px] bg-background border-b border-accent sticky top-0 z-50 max-[440px]:flex-col shadow-sm">
+    <header
+      className={`flex justify-between items-center gap-2 p-2 min-h-[70px] bg-background border-b border-accent sticky top-0 z-50 ${
+        hideButtons ? "max-[400px]:flex-col" : "max-lg:flex-col"
+      }  max-lg:gap-4 shadow-sm`}
+    >
       <div className="flex gap-5">
         <TooltipWrapper content="Back">
           <Button
+            className="cursor-pointer"
             variant="outline"
             size="icon"
             onClick={() => {
               if (pathname.includes("/runs")) {
                 router.push(`/dashboard/workflow/editor/${workflowId}`);
               } else {
-                router.back();
+                router.push("/dashboard/workflows");
               }
             }}
           >
@@ -47,7 +53,7 @@ export default function WorkflowTopbar({
           )}
         </div>
       </div>
-
+      <NavigationTabs workflowId={workflowId} />
       {!hideButtons && (
         <div className="flex items-center gap-3 max-[300px]:self-center">
           <ExecuteWorkflowBtn workflowId={workflowId} />

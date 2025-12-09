@@ -46,6 +46,7 @@ import {
 import { cn } from "@/lib/utils";
 import { LogLevel } from "@/lib/types/log";
 import PhaseStatusBadge from "./phase-status-badge";
+import CountUpWrapper from "@/app/(dashboard)/dashboard/_components/common/count-up-wrapper";
 
 export type ExecutionWithPhases = Awaited<
   ReturnType<typeof getUserWorkflowExecutionWithPhases>
@@ -74,24 +75,10 @@ export default function ExecutionViewer({ initialData }: Props) {
     startedAt: query.data?.startedAt,
   });
   const creditsConsumed = getPhasesTotalCost({
-    phases: (phaseDetails.data as ExecutionWithPhases)?.phases || [],
+    phases: query.data?.phases || [],
   });
+  console.log({ creditsConsumed });
   const isRunning = query.data?.status === WorkflowExecutionStatus.RUNNING;
-
-  // useEffect(() => {
-  //   const phases = query.data?.phases || [];
-  //   if (isRunning) {
-  //     const currentRunningPhase = phases.toSorted((a, b) =>
-  //       a.startedAt! > b.startedAt! ? -1 : 1
-  //     )[0];
-  //     setSelectedPhase(currentRunningPhase.id);
-  //     return;
-  //   }
-  //   const currentRunningPhase = phases.toSorted((a, b) =>
-  //     a.completedAt! > b.completedAt! ? -1 : 1
-  //   )[0];
-  //   setSelectedPhase(currentRunningPhase.id);
-  // }, [isRunning, query.data?.phases]);
 
   useEffect(() => {
     const phases = query.data?.phases ?? [];
@@ -136,7 +123,7 @@ export default function ExecutionViewer({ initialData }: Props) {
                     <DollarSign size={20} className="stroke-muted-foreground" />
                     <span>credits</span>
                   </div>
-                  <span>TODO</span>
+                  <span>{phaseDetails.data.creditsConsumed}</span>
                 </Badge>
                 <Badge
                   variant={"outline"}
@@ -196,7 +183,10 @@ function ExecutionViewerAside({
           label="status"
           value={
             <div className="flex gap-2 items-center">
-              <CheckCircle className="text-green-500" size={20} />
+              <PhaseStatusBadge
+                status={execution?.status as ExecutionPhaseStatus}
+              />
+
               {execution?.status}
             </div>
           }
@@ -225,7 +215,7 @@ function ExecutionViewerAside({
         <ExecutionDetailBox
           icon={Coins}
           label="credits consumed"
-          value={creditsConsumed}
+          value={<CountUpWrapper value={creditsConsumed} />}
         />
       </div>
 
