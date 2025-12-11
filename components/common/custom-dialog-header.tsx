@@ -5,7 +5,7 @@ import { Separator } from "../ui/separator";
 
 type Props = {
   title?: string;
-  subTitle: string;
+  subTitle?: string;
   icon?: LucideIcon;
   iconStyles?: string;
   titleStyles?: string;
@@ -15,7 +15,7 @@ export default function CustomDialogHeader(props: Props) {
   return (
     <DialogHeader>
       <DialogTitle asChild>
-        <div className="flex flex-col items-center gap-2 mb-2">
+        <div className="flex flex-col items-center gap-2 mb-2 p-2">
           {props.icon && (
             <props.icon
               size={30}

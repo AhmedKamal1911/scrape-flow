@@ -10,6 +10,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import TaskMenuSidebar from "./task-menu-sidebar";
 import { FlowInputsValidationContextProvider } from "@/components/context/FlowInputsValidationContext";
 import { Workflow } from "@prisma/client";
+import { WorkflowStatus } from "@/lib/types/workflow";
 
 type Props = {
   workflow: Workflow;
@@ -27,6 +28,7 @@ export default function EditorBox({ workflow }: Props) {
               <WorkflowTopbar
                 title="workflow editor"
                 subTitle="Edit your workflow here"
+                isPublished={workflow.status === WorkflowStatus.PUBLISHED}
                 workflowId={workflow.id}
               />
 

@@ -78,7 +78,7 @@ export default function CreateWorkflowDialog({ buttonText }: Props) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg max-[370px]:p-2">
         <CustomDialogHeader
           title="Create Workflow"
           subTitle="Start building your workflow"

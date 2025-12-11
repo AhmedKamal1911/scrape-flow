@@ -10,18 +10,22 @@ datasource db {
 }
 
 model Workflow {
-  id          String   @id @default(cuid())
-  userId      String
-  name        String
-  description String?
-  definition  String
-  status      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  userId        String
+  name          String
+  description   String?
+  definition    String
+  executionPlan String?
+  creditsCost   Int      @default(0)
+  status        String
+  cron          String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   lastRunAt          DateTime?
   lastRunId          String?
   lastRunStatus      String?
+  nextRunAt          DateTime?
   workflowExecutions WorkflowExecution[]
 
   @@unique([name, userId])

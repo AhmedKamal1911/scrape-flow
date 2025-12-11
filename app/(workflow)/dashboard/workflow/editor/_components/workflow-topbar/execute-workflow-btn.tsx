@@ -51,6 +51,7 @@ export default function ExecuteWorkflowBtn({
               </div>,
               {
                 duration: 8000,
+                id: "flow-execution",
               }
             );
           }
@@ -62,11 +63,12 @@ export default function ExecuteWorkflowBtn({
             "Cannot generate workflow plan. Please check your workflow inputs.",
             {
               duration: 5000,
+              id: "flow-execution",
             }
           );
           return;
         }
-
+        toast.loading("Executing Workflow...", { id: "flow-execution" });
         mutation.mutate({
           workflowId,
           flowDefinition: flowDefinition,

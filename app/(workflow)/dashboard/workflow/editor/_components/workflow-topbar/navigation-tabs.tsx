@@ -15,12 +15,18 @@ export default function NavigationTabs({ workflowId }: { workflowId: string }) {
     >
       <TabsList className="w-full grid grid-cols-2 capitalize">
         <Link href={`/dashboard/workflow/editor/${workflowId}`}>
-          <TabsTrigger value="editor" className="w-full font-semibold">
+          <TabsTrigger
+            value="editor"
+            className="w-full font-semibold cursor-pointer"
+          >
             Editor
           </TabsTrigger>
         </Link>
         <Link href={`/dashboard/workflow/runs/${workflowId}`}>
-          <TabsTrigger value="runs" className="w-full font-semibold">
+          <TabsTrigger
+            value="runs"
+            className="w-full font-semibold cursor-pointer"
+          >
             Runs
           </TabsTrigger>
         </Link>

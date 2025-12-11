@@ -9,10 +9,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import TooltipWrapper from "@/components/common/tooltip-wrapper";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, ShuffleIcon, Trash } from "lucide-react";
+import { MoreVertical, Play, ShuffleIcon, Trash } from "lucide-react";
 import Link from "next/link";
 import { Workflow } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
+import { useRunWorkflow } from "@/hooks/use-run-workflow";
 
 export default function WorkflowMenu({
   workflow,
@@ -21,6 +22,7 @@ export default function WorkflowMenu({
   workflow: Workflow;
   setOpenDeleteDialog: Dispatch<SetStateAction<boolean>>;
 }) {
+  const { runWorkflow, isRunning } = useRunWorkflow(workflow.id);
   return (
     <DropdownMenu>
       <TooltipWrapper content="Workflow Actions">
@@ -37,7 +39,18 @@ export default function WorkflowMenu({
       </TooltipWrapper>
       <DropdownMenuContent className="w-36" align="end">
         <DropdownMenuGroup>
-          <DropdownMenuItem className="min-[400px]:hidden" asChild>
+          <DropdownMenuItem
+            disabled={isRunning}
+            onClick={runWorkflow}
+            className={`min-[530px]:hidden`}
+            asChild
+          >
+            <div role="button" className={"flex items-center gap-2 capitalize"}>
+              <Play size={16} />
+              run
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuItem className={`min-[530px]:hidden`} asChild>
             <Link
               className={"flex items-center gap-2 capitalize"}
               href={`/dashboard/workflow/editor/${workflow.id}`}
