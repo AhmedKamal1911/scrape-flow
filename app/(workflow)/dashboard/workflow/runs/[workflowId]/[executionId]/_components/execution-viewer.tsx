@@ -12,7 +12,6 @@ import { formatDistanceToNow } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import {
   Calendar,
-  CheckCircle,
   CircleDashed,
   Clock,
   Coins,
@@ -173,7 +172,7 @@ function ExecutionViewerAside({
   duration: string | null;
   creditsConsumed: number;
 }) {
-  console.log({ duration });
+  console.log(execution?.status);
 
   return (
     <aside className="sticky top-[70px] w-[440px] min-w-[440px] max-w-[440px]  border-r-2 border-separate flex flex-col h-[calc(100vh-70px)] overflow-auto bg-sidebar">

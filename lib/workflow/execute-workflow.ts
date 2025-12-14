@@ -21,29 +21,32 @@ import { createLogCollector } from "../execution-logger";
 type WorkflowExecutionWithPhasesType = Awaited<
   ReturnType<typeof getWorkflowExecutionWithPhases>
 >;
-export async function executeWorkflow(executionId: string) {
+export async function executeWorkflow(executionId: string, nextRunAt?: Date) {
   const execution = await getWorkflowExecutionWithPhases(executionId);
   const executionEnv: Environment = { phases: {} };
   const edges: Edge[] = JSON.parse(execution.definition).edges;
   await initializeWorkflowExecution({
     executionId,
     workflowId: execution.workflowId,
+    nextRunAt,
   });
   await initializeExecutionPhaseStatuses(execution);
 
   let creditsConsumed = 0;
   let executionFailed = false;
   for (const phase of execution.phases) {
-    const executionPhase = await executeWorkflowPhase({
-      phase,
-      environment: executionEnv,
-      edges,
-      userId: execution.userId,
-    });
+    const { success, creditsConsumed: phaseCredits } =
+      await executeWorkflowPhase({
+        phase,
+        environment: executionEnv,
+        edges,
+        userId: execution.userId,
+      });
 
-    creditsConsumed += executionPhase.creditsConsumed;
-    if (!executionPhase) {
+    creditsConsumed += phaseCredits;
+    if (!success) {
       executionFailed = true;
+
       break;
     }
   }
@@ -68,9 +71,11 @@ export async function executeWorkflow(executionId: string) {
 async function initializeWorkflowExecution({
   executionId,
   workflowId,
+  nextRunAt,
 }: {
   executionId: string;
   workflowId: string;
+  nextRunAt?: Date;
 }) {
   await prisma.workflowExecution.update({
     where: {
@@ -90,6 +95,7 @@ async function initializeWorkflowExecution({
       lastRunAt: new Date(),
       lastRunId: executionId,
       lastRunStatus: WorkflowExecutionStatus.RUNNING,
+      ...(nextRunAt && { nextRunAt }),
     },
   });
 }
@@ -221,6 +227,7 @@ async function executePhase({
     console.error("executePhase error runFunction is not exist");
     return false;
   }
+
   await waitFor(3000);
   const executionEnvironment: ExecutionEnv<WorkflowTask> =
     createExecutionEnvironment({

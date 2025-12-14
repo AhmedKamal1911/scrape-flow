@@ -20,3 +20,17 @@ export default function ExecutionStatusIndicator({
     />
   );
 }
+
+const statusLabelColors: Record<WorkflowExecutionStatus, string> = {
+  PENDING: "text-slate-500",
+  RUNNING: "text-yellow-500",
+  COMPLETED: "text-emerald-500",
+  FAILED: "text-destructive",
+};
+export function ExecutionStatusLabel({
+  status,
+}: {
+  status: WorkflowExecutionStatus;
+}) {
+  return <span className={cn(statusLabelColors[status])}>{status}</span>;
+}

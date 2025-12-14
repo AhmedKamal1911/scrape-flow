@@ -8,10 +8,11 @@ import {
 
 type Props = {
   children: ReactNode;
-  content: string;
+  content: string | null;
   side?: React.ComponentProps<typeof TooltipContent>["side"];
 };
 export default function TooltipWrapper({ children, content, side }: Props) {
+  if (!content) return children;
   return (
     <TooltipProvider delayDuration={0}>
       <Tooltip>

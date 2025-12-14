@@ -1,10 +1,11 @@
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
-import { WorkflowStatus } from "@/lib/types/workflow";
+import { WorkflowExecutionStatus, WorkflowStatus } from "@/lib/types/workflow";
 import { Workflow } from "@prisma/client";
 import {
+  Clock,
   Coins,
   CornerDownRight,
   FileText,
@@ -18,6 +19,11 @@ import RunWorkflowBtn from "./run-workflow-btn";
 import SchedulerDialog from "./scheduler-dialog";
 import TooltipWrapper from "@/components/common/tooltip-wrapper";
 import { cn } from "@/lib/utils";
+import { format, formatDistanceToNow } from "date-fns";
+import ExecutionStatusIndicator, {
+  ExecutionStatusLabel,
+} from "@/app/(workflow)/dashboard/workflow/runs/[workflowId]/_components/execution-status-indicator";
+import DuplicateWorkflowDialog from "./duplicate-workflow-dialog";
 
 type Props = {
   workflow: Workflow;
@@ -32,11 +38,15 @@ export default function WorkflowCard({ workflow }: Props) {
   const isDraft = workflow.status === WorkflowStatus.DRAFT;
 
   return (
-    <Card>
+    <Card
+      className={cn("rounded-sm", {
+        "pb-0": Boolean(workflow.lastRunAt || workflow.nextRunAt) && !isDraft,
+      })}
+    >
       <CardContent className="p-3 flex justify-between items-center gap-3">
         <div className="flex gap-2 min-[400px]:gap-4">
           <div
-            className={`flex items-center justify-center rounded-full size-7 min-[400px]:size-10 ${
+            className={`flex shrink-0 items-center justify-center rounded-full size-7 min-[400px]:size-10 ${
               statusColors[workflow.status as WorkflowStatus]
             }`}
           >
@@ -51,14 +61,16 @@ export default function WorkflowCard({ workflow }: Props) {
             className={cn(`flex flex-col gap-2`, isDraft && "justify-center")}
           >
             <div className="flex items-center gap-3 min-[400px]:gap-4">
-              <CardTitle className="min-[400px]:text-xl capitalize">
-                <Link
-                  href={`/dashboard/workflow/editor/${workflow.id}`}
-                  className="hover:underline"
-                >
-                  {workflow.name}
-                </Link>
-              </CardTitle>
+              <TooltipWrapper content={workflow.description}>
+                <CardTitle className="min-[400px]:text-xl capitalize">
+                  <Link
+                    href={`/dashboard/workflow/editor/${workflow.id}`}
+                    className="hover:underline"
+                  >
+                    {workflow.name}
+                  </Link>
+                </CardTitle>
+              </TooltipWrapper>
 
               <Badge
                 className={cn(
@@ -78,27 +90,26 @@ export default function WorkflowCard({ workflow }: Props) {
             )}
           </div>
         </div>
-
         <div className="flex items-center gap-2">
-          {!isDraft && (
-            <div className="max-[530px]:hidden block">
-              <RunWorkflowBtn workflowId={workflow.id} />
-            </div>
-          )}
-          <Link
-            className={buttonVariants({
-              variant: "ghost",
-              className: `hidden! min-[530px]:flex! items-center gap-2 capitalize`,
-            })}
-            href={`/dashboard/workflow/editor/${workflow.id}`}
-          >
-            <ShuffleIcon size={16} />
-            edit
-          </Link>
+          <div className="flex items-center gap-2 max-[890px]:hidden">
+            {!isDraft && <RunWorkflowBtn workflowId={workflow.id} />}
 
+            <Link
+              className={buttonVariants({
+                variant: "ghost",
+                className: `flex items-center gap-2 capitalize`,
+              })}
+              href={`/dashboard/workflow/editor/${workflow.id}`}
+            >
+              <ShuffleIcon size={16} />
+              edit
+            </Link>
+            <DuplicateWorkflowDialog workflowId={workflow.id} />
+          </div>
           <WorkflowOptions workflow={workflow} />
         </div>
       </CardContent>
+      {!isDraft && <LastRunDetails workflow={workflow} />}
     </Card>
   );
 }
@@ -130,6 +141,45 @@ function ScheduleSection({
           </div>
         </TooltipWrapper>
       </div>
+    </div>
+  );
+}
+
+function LastRunDetails({ workflow }: { workflow: Workflow }) {
+  const { lastRunAt, lastRunStatus, id, lastRunId, nextRunAt } = workflow;
+
+  if (!lastRunAt || !lastRunStatus) {
+    return (
+      <div className="px-3 py-2 flex items-center gap-2 text-xs sm:text-sm capitalize bg-accent">
+        No runs yet
+      </div>
+    );
+  }
+
+  const timeToNextRun = nextRunAt && format(nextRunAt, "yyyy-MM-dd HH:mm");
+  const timeAgo = formatDistanceToNow(lastRunAt, { addSuffix: true });
+
+  return (
+    <div className="px-3 py-2 flex flex-wrap justify-between items-center gap-2 text-xs sm:text-sm capitalize bg-accent">
+      <Link
+        className="flex items-center gap-2"
+        href={`/dashboard/workflow/runs/${id}/${lastRunId}`}
+      >
+        <ExecutionStatusIndicator
+          status={lastRunStatus as WorkflowExecutionStatus}
+        />
+        <span>Last run:</span>
+        <ExecutionStatusLabel
+          status={lastRunStatus as WorkflowExecutionStatus}
+        />
+        ({timeAgo})
+      </Link>
+      {timeToNextRun && (
+        <div className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground">
+          <Clock className="size-4" />
+          Next run: {timeToNextRun}
+        </div>
+      )}
     </div>
   );
 }

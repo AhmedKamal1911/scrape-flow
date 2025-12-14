@@ -38,7 +38,7 @@ export async function createWorkflowAction(inputs: WorkflowInputs) {
       },
     });
     if (isWorkflowExist) {
-      throw new Error("Work Flow Already Exist!");
+      throw new Error("Workflow Already Exist!");
     }
 
     const result = await prisma.workflow.create({

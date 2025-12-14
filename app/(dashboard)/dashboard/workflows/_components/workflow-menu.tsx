@@ -23,6 +23,7 @@ export default function WorkflowMenu({
   setOpenDeleteDialog: Dispatch<SetStateAction<boolean>>;
 }) {
   const { runWorkflow, isRunning } = useRunWorkflow(workflow.id);
+  // TODO:add duplicate workflow btn to menu
   return (
     <DropdownMenu>
       <TooltipWrapper content="Workflow Actions">
@@ -42,7 +43,7 @@ export default function WorkflowMenu({
           <DropdownMenuItem
             disabled={isRunning}
             onClick={runWorkflow}
-            className={`min-[530px]:hidden`}
+            className={`min-[890px]:hidden`}
             asChild
           >
             <div role="button" className={"flex items-center gap-2 capitalize"}>
@@ -50,7 +51,7 @@ export default function WorkflowMenu({
               run
             </div>
           </DropdownMenuItem>
-          <DropdownMenuItem className={`min-[530px]:hidden`} asChild>
+          <DropdownMenuItem className={`min-[890px]:hidden`} asChild>
             <Link
               className={"flex items-center gap-2 capitalize"}
               href={`/dashboard/workflow/editor/${workflow.id}`}
