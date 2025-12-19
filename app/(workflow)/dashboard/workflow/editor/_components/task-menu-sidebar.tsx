@@ -29,7 +29,30 @@ export default function TaskMenuSidebar({
           <SidebarGroup>
             <SidebarGroupLabel
               asChild
-              className="group/label text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
+              className="group/label transition text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm hover:underline"
+            >
+              <CollapsibleTrigger className="font-bold! text-lg">
+                User Interactions
+                <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent defaultValue={""}>
+              <SidebarGroupContent className=" flex flex-col gap-3">
+                <SidebarMenuItem className="mt-2">
+                  <TaskMenuBtn taskType={NodeTaskType.FILL_INPUT} />
+                </SidebarMenuItem>
+                <SidebarMenuItem className="mt-2">
+                  <TaskMenuBtn taskType={NodeTaskType.ELEMENT_CLICKER} />
+                </SidebarMenuItem>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
+        <Collapsible defaultOpen className="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel
+              asChild
+              className="group/label transition text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm hover:underline"
             >
               <CollapsibleTrigger className="font-bold! text-lg">
                 Data extraction
@@ -45,6 +68,46 @@ export default function TaskMenuSidebar({
                   <TaskMenuBtn
                     taskType={NodeTaskType.EXTRACT_TEXT_FROM_ELEMENT}
                   />
+                </SidebarMenuItem>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
+        <Collapsible defaultOpen className="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel
+              asChild
+              className="group/label transition text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm hover:underline"
+            >
+              <CollapsibleTrigger className="font-bold! text-lg">
+                Timing Controls
+                <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent className=" flex flex-col gap-3">
+                <SidebarMenuItem className="mt-2">
+                  <TaskMenuBtn taskType={NodeTaskType.WAIT_FOR_ELEMENT} />
+                </SidebarMenuItem>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
+        <Collapsible defaultOpen className="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel
+              asChild
+              className="group/label transition text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm hover:underline"
+            >
+              <CollapsibleTrigger className="font-bold! text-lg">
+                Result Delivery
+                <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent className=" flex flex-col gap-3">
+                <SidebarMenuItem className="mt-2">
+                  <TaskMenuBtn taskType={NodeTaskType.DELIVER_VIA_WEBHOOK} />
                 </SidebarMenuItem>
               </SidebarGroupContent>
             </CollapsibleContent>

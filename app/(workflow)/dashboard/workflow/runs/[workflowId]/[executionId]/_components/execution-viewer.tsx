@@ -65,7 +65,7 @@ export default function ExecutionViewer({ initialData }: Props) {
   });
 
   const phaseDetails = useQuery({
-    queryKey: ["phaseDetails", selectedPhase],
+    queryKey: ["phaseDetails", selectedPhase, query.data?.status],
     enabled: selectedPhase !== null,
     queryFn: () => getWorkflowPhaseDetails(selectedPhase!),
   });
@@ -326,7 +326,7 @@ function LogsViewer({ logs }: { logs: ExecutionLog[] }) {
                 >
                   {log.logLevel}
                 </TableCell>
-                <TableCell className="text-sm flex-1 p-1 pl-2">
+                <TableCell className="text-sm flex-1 p-1 pl-2  text-ellipsis whitespace-break-spaces">
                   {log.message}
                 </TableCell>
               </TableRow>

@@ -62,7 +62,7 @@ export default function WorkflowCard({ workflow }: Props) {
           >
             <div className="flex items-center gap-3 min-[400px]:gap-4">
               <TooltipWrapper content={workflow.description}>
-                <CardTitle className="min-[400px]:text-xl capitalize">
+                <CardTitle className="min-[400px]:text-xl">
                   <Link
                     href={`/dashboard/workflow/editor/${workflow.id}`}
                     className="hover:underline"

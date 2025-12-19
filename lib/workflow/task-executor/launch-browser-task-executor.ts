@@ -1,4 +1,3 @@
-import { waitFor } from "@/lib/helper-utils/wait-for";
 import { ExecutionEnv } from "@/lib/types/executor";
 import puppeteer from "puppeteer";
 import { LaunchBrowserTask } from "../task/launch-browser-task";
@@ -8,7 +7,7 @@ export async function LanuchBrowserExecutor(
   try {
     const websiteUrl = environment.getInput("Website Url");
 
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({ headless: false });
     environment.setBrowser(browser);
 
     environment.log.info("browser started successfully");

@@ -10,7 +10,7 @@ import { waitFor } from "../helper-utils/wait-for";
 import { ExecutionPhase } from "@prisma/client";
 import { FlowNode } from "../types/flowNode";
 import { TaskRegistry } from "./task/task-registry";
-import { TaskExecutorRegistry } from "./task-executor/registry";
+import { TaskExecutorRegistry } from "./task-executor/executor-registry";
 import { Environment, ExecutionEnv } from "../types/executor";
 import { NodeTaskInputType } from "../types/nodeTask";
 import { Browser, Page } from "puppeteer";
@@ -225,10 +225,11 @@ async function executePhase({
   const runFunction = TaskExecutorRegistry[node.data.type];
   if (!runFunction) {
     console.error("executePhase error runFunction is not exist");
+    logCollector.error(`not found executor for ${node.data.type}`);
     return false;
   }
 
-  await waitFor(3000);
+  // await waitFor(3000);
   const executionEnvironment: ExecutionEnv<WorkflowTask> =
     createExecutionEnvironment({
       node,

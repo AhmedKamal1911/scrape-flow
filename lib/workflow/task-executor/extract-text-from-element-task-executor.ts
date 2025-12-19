@@ -8,31 +8,37 @@ export async function ExtractElementFromHtmlTaskExecutor(
   try {
     const selector = environment.getInput("Selector");
     if (!selector) {
-      console.error("selector not found");
-      environment.log.error("selector not defined");
+      environment.log.error("Missing required input: 'Selector'.");
       return false;
     }
     const html = environment.getInput("Html");
     if (!html) {
-      environment.log.error("html not defined");
+      environment.log.error("Missing required input: 'Html'.");
       return false;
     }
+
+    environment.log.info(
+      `Extracting text from HTML using selector: ${selector}`
+    );
     const $ = cheerio.load(html);
     const element = $(selector);
     if (!element) {
-      environment.log.error("element not found");
+      environment.log.error("Element not found for the provided selector.");
       return false;
     }
     const extractedText = $.text(element);
     if (!extractedText) {
-      environment.log.error("element has no text");
+      environment.log.error("Element found but contains no text.");
       return false;
     }
     environment.setOutput("Extracted text", extractedText);
+
+    environment.log.info("Text extracted successfully.");
     return true;
   } catch (error) {
     const e = error as Error;
-    environment.log.error(e.message);
+    environment.log.error("Failed to extract text from element.");
+    environment.log.error(`Internal error: ${e.message}`);
     return false;
   }
 }

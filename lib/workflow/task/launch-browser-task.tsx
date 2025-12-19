@@ -1,14 +1,12 @@
 import { NodeTaskInputType, NodeTaskType } from "@/lib/types/nodeTask";
 import { WorkflowTask } from "@/lib/types/workflow";
-import { GlobeIcon, LucideProps } from "lucide-react";
+import { GlobeIcon } from "lucide-react";
 
 export const LaunchBrowserTask = {
   isEntryPoint: true,
   type: NodeTaskType.LAUNCH_BROWSER,
   label: "Launch Browser",
-  icon: (props: LucideProps) => (
-    <GlobeIcon className="stroke-rose-500" {...props} />
-  ),
+  icon: (props) => <GlobeIcon className="stroke-rose-500" {...props} />,
   inputs: [
     {
       type: NodeTaskInputType.STRING,

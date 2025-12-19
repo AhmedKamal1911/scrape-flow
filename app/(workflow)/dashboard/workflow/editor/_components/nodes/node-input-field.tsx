@@ -4,6 +4,7 @@ import StringInputField from "./inputs/string-input-field";
 import { useReactFlow } from "@xyflow/react";
 import { FlowNode } from "@/lib/types/flowNode";
 import BrowserInstanceInput from "./inputs/browser-instance-input";
+import SelectInput from "./inputs/select-input";
 
 export default function NodeInputField({
   input,
@@ -40,7 +41,7 @@ export default function NodeInputField({
           disabled={isConnected}
         />
       );
-      break;
+
     case NodeTaskInputType.BROWSER_INSTANCE:
       return (
         <BrowserInstanceInput
@@ -49,7 +50,15 @@ export default function NodeInputField({
           inputValue={inputValue}
         />
       );
-      break;
+
+    case NodeTaskInputType.SELECT:
+      return (
+        <SelectInput
+          updateNodeInputValue={updateNodeInputValue}
+          inputProps={input}
+          inputValue={inputValue}
+        />
+      );
 
     default:
       return (
