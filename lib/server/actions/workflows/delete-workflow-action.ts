@@ -15,6 +15,7 @@ export async function deleteWorkflowAction(workflowId: string) {
   if (!userId) {
     throw new Error("Unauthnticated!");
   }
+  // TODO: remove and replace with require auth fn
   try {
     await prisma.workflow.delete({
       where: {

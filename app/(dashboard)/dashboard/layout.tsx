@@ -15,9 +15,7 @@ export default function layout({ children }: { children: ReactNode }) {
           <Header />
           <Separator />
           <section className="overflow-auto flex-1">
-            <div className="h-full container py-4 text-accent-foreground">
-              {children}
-            </div>
+            <div className="h-full container py-4">{children}</div>
           </section>
         </main>
       </SidebarProvider>
