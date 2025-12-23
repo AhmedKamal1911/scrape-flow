@@ -13,6 +13,7 @@ export const DeliverViaWebhookTask = {
       type: NodeTaskInputType.STRING,
       name: "Target URL",
       required: true,
+      hideHandle: true,
     },
     {
       type: NodeTaskInputType.STRING,

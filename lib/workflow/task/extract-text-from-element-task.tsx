@@ -1,12 +1,12 @@
 import { NodeTaskInputType, NodeTaskType } from "@/lib/types/nodeTask";
 import { WorkflowTask } from "@/lib/types/workflow";
-import { Code } from "lucide-react";
+import { ScrollText } from "lucide-react";
 
 export const ExtractTextFromElementTask = {
   isEntryPoint: false,
   type: NodeTaskType.EXTRACT_TEXT_FROM_ELEMENT,
   label: "Extract text from element",
-  icon: (props) => <Code className="stroke-rose-600" {...props} />,
+  icon: (props) => <ScrollText className="stroke-rose-600" {...props} />,
   inputs: [
     {
       type: NodeTaskInputType.STRING,

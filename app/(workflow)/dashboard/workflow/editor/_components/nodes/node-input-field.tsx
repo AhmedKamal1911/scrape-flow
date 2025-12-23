@@ -5,6 +5,7 @@ import { useReactFlow } from "@xyflow/react";
 import { FlowNode } from "@/lib/types/flowNode";
 import BrowserInstanceInput from "./inputs/browser-instance-input";
 import SelectInput from "./inputs/select-input";
+import CredentialsInput from "./inputs/credentials-input";
 
 export default function NodeInputField({
   input,
@@ -54,6 +55,14 @@ export default function NodeInputField({
     case NodeTaskInputType.SELECT:
       return (
         <SelectInput
+          updateNodeInputValue={updateNodeInputValue}
+          inputProps={input}
+          inputValue={inputValue}
+        />
+      );
+    case NodeTaskInputType.CREDENTIAL:
+      return (
+        <CredentialsInput
           updateNodeInputValue={updateNodeInputValue}
           inputProps={input}
           inputValue={inputValue}

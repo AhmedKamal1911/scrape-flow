@@ -6,7 +6,7 @@ import {
   WorkflowExecutionStatus,
   WorkflowTask,
 } from "../types/workflow";
-import { waitFor } from "../helper-utils/wait-for";
+
 import { ExecutionPhase } from "@prisma/client";
 import { FlowNode } from "../types/flowNode";
 import { TaskRegistry } from "./task/task-registry";
@@ -228,8 +228,6 @@ async function executePhase({
     logCollector.error(`not found executor for ${node.data.type}`);
     return false;
   }
-
-  // await waitFor(3000);
   const executionEnvironment: ExecutionEnv<WorkflowTask> =
     createExecutionEnvironment({
       node,

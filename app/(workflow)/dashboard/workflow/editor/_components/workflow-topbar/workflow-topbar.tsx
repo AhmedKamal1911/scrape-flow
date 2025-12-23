@@ -59,7 +59,7 @@ export default function WorkflowTopbar({
       </div>
       <NavigationTabs workflowId={workflowId} />
       {!hideButtons && (
-        <div className="flex items-center gap-3 max-[300px]:self-center">
+        <div className="flex items-center gap-3 max-[300px]:self-center max-[330px]:flex-col max-[330px]:items-stretch!">
           <ExecuteWorkflowBtn workflowId={workflowId} />
           {!isPublished && <SaveWorkflowEditsBtn workflowId={workflowId} />}
           {isPublished ? (

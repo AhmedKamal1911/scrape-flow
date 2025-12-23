@@ -16,7 +16,7 @@ export default function CredentialsPage() {
       <PageHeader
         title="Credentials"
         description="Manage your credentials."
-        // action={<CreateWorkflowDialog />}
+        action={<CreateCredentialDialog buttonText="create" />}
       />
 
       <div className="h-full flex flex-col gap-16">
