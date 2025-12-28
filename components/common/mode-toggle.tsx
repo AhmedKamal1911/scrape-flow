@@ -27,13 +27,13 @@ export function ModeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      className="relative size-10 flex items-center justify-center overflow-hidden cursor-pointer"
+      className="relative size-10 flex items-center justify-center overflow-hidden cursor-pointer hover:bg-muted!"
       onClick={handleToggle}
     >
       <Sun
         className={`absolute size-6 transition-all duration-500 ease-linear transform ${
           animateDark
-            ? "translate-y-full scale-0 rotate-[280deg] opacity-0"
+            ? "translate-y-full scale-0 rotate-280 opacity-0"
             : "translate-y-0 scale-100 rotate-0 opacity-100"
         }`}
       />
@@ -41,7 +41,7 @@ export function ModeToggle() {
         className={`absolute size-6 transition-all duration-500 ease-in-out transform ${
           animateDark
             ? "translate-y-0 scale-100 rotate-0 opacity-100"
-            : "-translate-y-full scale-0 -rotate-[360deg] opacity-0"
+            : "-translate-y-full scale-0 -rotate-360 opacity-0"
         }`}
       />
       <span className="sr-only">Toggle theme</span>

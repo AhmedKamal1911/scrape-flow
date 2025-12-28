@@ -1,7 +1,12 @@
+"use client";
+import { cn } from "@/lib/utils";
 import { Waypoints } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Logo() {
+  const path = usePathname();
+
   return (
     <Link
       href={"/"}
@@ -13,7 +18,14 @@ export default function Logo() {
 
       <div className="flex capitalize font-bold">
         <span className="text-primary">flow</span>
-        <span className="text-accent-foreground">scrape</span>
+        <span
+          className={cn(
+            "text-accent-foreground",
+            (path === "/sign-up" || path === "/sign-in") && "text-black!"
+          )}
+        >
+          scrape
+        </span>
       </div>
     </Link>
   );

@@ -17,7 +17,7 @@ export default function NavigationTabs({ workflowId }: { workflowId: string }) {
         <Link href={`/dashboard/workflow/editor/${workflowId}`}>
           <TabsTrigger
             value="editor"
-            className="w-full font-semibold cursor-pointer"
+            className="w-full font-semibold cursor-pointer dark:data-[state=active]:bg-primary!"
           >
             Editor
           </TabsTrigger>
@@ -25,7 +25,7 @@ export default function NavigationTabs({ workflowId }: { workflowId: string }) {
         <Link href={`/dashboard/workflow/runs/${workflowId}`}>
           <TabsTrigger
             value="runs"
-            className="w-full font-semibold cursor-pointer"
+            className="w-full font-semibold cursor-pointer dark:data-[state=active]:bg-primary!"
           >
             Runs
           </TabsTrigger>

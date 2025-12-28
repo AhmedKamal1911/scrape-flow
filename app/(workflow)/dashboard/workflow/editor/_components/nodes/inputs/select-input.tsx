@@ -29,7 +29,7 @@ export default function SelectInput({
         onValueChange={(value) => updateNodeInputValue(value)}
         defaultValue={inputValue}
       >
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="w-full bg-background!">
           <SelectValue placeholder="Select an option" />
         </SelectTrigger>
         <SelectContent>

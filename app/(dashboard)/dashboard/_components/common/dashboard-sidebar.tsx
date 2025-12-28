@@ -23,7 +23,7 @@ export type Route = {
   icon: LucideIcon;
 };
 const routes: Route[] = [
-  { href: "/dashboard", label: "Home", icon: Home },
+  { href: "/dashboard/home", label: "Home", icon: Home },
   {
     href: "/dashboard/workflows",
     label: "Workflows",
